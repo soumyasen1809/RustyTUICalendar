@@ -20,14 +20,14 @@ fn get_calendar_title_block(month: u32, year: i32) -> Block<'static> {
 
 fn get_calendar_text(calendar_text: String) -> Paragraph<'static> {
     Paragraph::new(calendar_text)
-        .fg(Color::Black)
+        .fg(Color::DarkGray)
         .add_modifier(Modifier::BOLD)
         .block(Block::new().padding(Padding::new(5, 5, 5, 5)))
         .alignment(Alignment::Left)
 }
 
 fn get_calendar_month_block() -> Block<'static> {
-    Block::default().borders(Borders::ALL).fg(Color::Black)
+    Block::default().borders(Borders::ALL).fg(Color::DarkGray)
 }
 
 fn get_appointment_text(appointment_text: String) -> Paragraph<'static> {

@@ -65,8 +65,7 @@ impl ToDoList {
             todo_text.push_str(&high_prio_title);
             todo_text.push_str("\n");
             for items in high_prio_list.iter() {
-                // todo_text.push_str(&convert_prio_to_string(items.high_prio));
-                todo_text.push_str(&format!("{: <8}", items.todo_name));
+                todo_text.push_str(&items.todo_name);
                 todo_text.push_str("\n");
             }
             todo_text.push_str("\n");
@@ -77,8 +76,7 @@ impl ToDoList {
             todo_text.push_str(&low_prio_title);
             todo_text.push_str("\n");
             for items in low_prio_list.iter() {
-                // todo_text.push_str(&convert_prio_to_string(items.high_prio));
-                todo_text.push_str(&format!("{: <8}", items.todo_name));
+                todo_text.push_str(&items.todo_name);
                 todo_text.push_str("\n");
             }
         }
