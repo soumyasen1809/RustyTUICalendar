@@ -17,19 +17,6 @@ pub mod data;
 pub mod logic;
 pub mod widgets;
 
-// fn main() {
-// let mut siv = cursive::default();
-// let current_date = CalendarRender::new();
-// println!("now: {:?}", current_date);
-
-// let app_layout = widgets::layout(&current_date);
-
-// siv.add_layer(Dialog::around(app_layout).title("Calendar app"));
-// siv.add_global_callback(Key::Esc, |s| s.quit());
-
-// siv.run();
-// }
-
 fn main() -> io::Result<()> {
     enable_raw_mode()?;
     stdout().execute(EnterAlternateScreen)?;
