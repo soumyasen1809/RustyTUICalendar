@@ -1,3 +1,5 @@
+use std::{fs, str::FromStr};
+
 use chrono::{Datelike, NaiveDate};
 
 #[derive(Default, Debug, Clone)]
@@ -33,6 +35,10 @@ impl Calendar {
 
     pub fn get_current_date(&self) -> chrono::NaiveDate {
         self.current_date
+    }
+
+    pub fn get_all_events_from_calendar(&self) -> Vec<Events> {
+        self.all_events.clone()
     }
 
     pub fn get_day_count(&self) -> u32 {
@@ -109,18 +115,12 @@ impl Calendar {
         calendar_text
     }
 
-    pub fn generate_appointment_text(&self, date: NaiveDate) -> String {
+    pub fn generate_appointment_text(&mut self, date: NaiveDate) -> String {
         let mut appointment_text = String::new();
 
-        let mut events_to_search = self.get_event_from_calendar(date);
+        self.add_appointments_from_json();
 
-        // Remove DUMMY --------
-        let dummy_event = Events::new(date, "Demo name".to_string(), "Demo Location".to_string());
-        events_to_search.push(dummy_event);
-        let dummy_event2 =
-            Events::new(date, "Demo name2".to_string(), "Demo Location2".to_string());
-        events_to_search.push(dummy_event2);
-        // ---------------------
+        let events_to_search = self.get_event_from_calendar(date);
 
         for ev in &events_to_search {
             // Note: Using \t will cause the bounding box to cut lines
@@ -135,4 +135,34 @@ impl Calendar {
 
         appointment_text
     }
+
+    pub fn add_appointments_from_json(&mut self) {
+        let appointment_path = "assets/appointments.json";
+        let data = fs::read_to_string(appointment_path).expect("Could not open file");
+        let app_json: serde_json::Value =
+            serde_json::from_str(&data).expect("Serde error in reading data from JSON");
+
+        // Manually add each element to the struct
+        let current_date_json = app_json["current_date"].as_str().unwrap().to_string();
+        let current_date_chrono = string_to_naive_date(&current_date_json);
+
+        let events_json = app_json["all_events"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|event| Events {
+                date: string_to_naive_date(event["date"].as_str().unwrap()),
+                event_name: event["event_name"].as_str().unwrap().to_string(),
+                location: event["location"].as_str().unwrap().to_string(),
+            })
+            .collect::<Vec<Events>>();
+
+        self.current_date = current_date_chrono;
+        self.all_events.clear();
+        self.all_events = events_json;
+    }
+}
+
+fn string_to_naive_date(s: &str) -> NaiveDate {
+    NaiveDate::from_str(&s).unwrap()
 }

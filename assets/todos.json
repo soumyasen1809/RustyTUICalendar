@@ -1,0 +1,20 @@
+{
+    "all_todos": [
+        {
+            "high_prio": true,
+            "todo_name": "Finish Rust project"
+        },
+        {
+            "high_prio": false,
+            "todo_name": "Buy groceries"
+        },
+        {
+            "high_prio": true,
+            "todo_name": "Prepare for meeting"
+        },
+        {
+            "high_prio": false,
+            "todo_name": "Read a book"
+        }
+    ]
+}

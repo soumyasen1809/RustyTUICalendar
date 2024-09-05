@@ -8,7 +8,7 @@ use ratatui::{
     Frame,
 };
 
-use crate::data::Calendar;
+use crate::calendar_data::Calendar;
 
 fn get_calendar_title_block(month: u32, year: i32) -> Block<'static> {
     Block::default()
@@ -46,8 +46,8 @@ fn get_appointment_block(day: u32, month: u32, year: i32) -> Block<'static> {
 }
 
 pub fn main_calendar_layout(frame: &mut Frame, main_layout: &Rc<[Rect]>) {
-    let calendar = Calendar::new();
-    let day = calendar.current_date.day0();
+    let mut calendar = Calendar::new();
+    let day = calendar.current_date.day();
     let year = calendar.current_date.year();
     let month = calendar.current_date.month();
 

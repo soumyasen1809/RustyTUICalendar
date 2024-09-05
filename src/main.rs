@@ -13,9 +13,10 @@ use ratatui::{
 
 use widgets::app_layout;
 
+pub mod calendar_data;
 pub mod calendar_widget;
-pub mod data;
 pub mod logic;
+pub mod to_do_data;
 pub mod to_do_widget;
 pub mod widgets;
 
