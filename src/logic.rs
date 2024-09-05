@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt::Debug};
+use std::fmt::Debug;
 
 use chrono::Months;
 
@@ -14,7 +14,7 @@ impl CalendarRender {
         Self {
             calendar: Calendar {
                 current_date: chrono::Local::now().date_naive(),
-                event_map: HashMap::new(),
+                all_events: Vec::new(),
             },
         }
     }
@@ -27,7 +27,7 @@ impl CalendarRender {
                     .get_current_date()
                     .checked_add_months(Months::new(1))
                     .unwrap(),
-                event_map: HashMap::new(),
+                all_events: Vec::new(),
             },
         }
     }
@@ -40,7 +40,7 @@ impl CalendarRender {
                     .get_current_date()
                     .checked_sub_months(Months::new(1))
                     .unwrap(),
-                event_map: HashMap::new(),
+                all_events: Vec::new(),
             },
         }
     }

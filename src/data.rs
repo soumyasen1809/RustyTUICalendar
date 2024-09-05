@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use chrono::{Datelike, NaiveDate};
 
 #[derive(Default, Debug, Clone)]
@@ -22,14 +20,14 @@ impl Events {
 #[derive(Default, Debug, Clone)]
 pub struct Calendar {
     pub current_date: chrono::NaiveDate,
-    pub event_map: HashMap<chrono::NaiveDate, Vec<Events>>,
+    pub all_events: Vec<Events>,
 }
 
 impl Calendar {
     pub fn new() -> Self {
         Self {
             current_date: chrono::Local::now().date_naive(),
-            event_map: HashMap::new(),
+            all_events: Vec::new(),
         }
     }
 
@@ -55,12 +53,25 @@ impl Calendar {
     }
 
     pub fn add_event_to_calendar(&mut self, event: Events) {
-        let key = event.date;
-        self.event_map.entry(key).or_insert(Vec::new()).push(event);
+        self.all_events.push(event);
     }
 
     pub fn get_event_from_calendar(&self, date: NaiveDate) -> Vec<Events> {
-        self.event_map.get(&date).unwrap_or(&Vec::new()).clone()
+        let indices: Vec<_> = self
+            .all_events
+            .iter()
+            .enumerate()
+            .filter_map(|(index, ev)| if ev.date == date { Some(index) } else { None })
+            .collect();
+
+        // Filter Map Logic: The filter_map closure should return the index if the condition is met, otherwise None (important)
+
+        let mut event_vec = Vec::new();
+        for &i in indices.iter() {
+            event_vec.push(self.all_events[i].clone());
+        }
+
+        event_vec
     }
 
     pub fn get_month_table(&self) -> Vec<Vec<u32>> {
@@ -96,5 +107,30 @@ impl Calendar {
         }
 
         calendar_text
+    }
+
+    pub fn generate_appointment_text(&self, date: NaiveDate) -> String {
+        let mut appointment_text = String::new();
+
+        let mut events_to_search = self.get_event_from_calendar(date);
+
+        // Remove DUMMY --------
+        let dummy_event = Events::new(date, "Demo name".to_string(), "Demo Location".to_string());
+        events_to_search.push(dummy_event);
+        let dummy_event2 =
+            Events::new(date, "Demo name2".to_string(), "Demo Location2".to_string());
+        events_to_search.push(dummy_event2);
+        // ---------------------
+
+        for ev in &events_to_search {
+            let event_name_str = String::from("Event: \t") + &ev.event_name;
+            let location_name_str = String::from("Location: \t") + &ev.location;
+            appointment_text.push_str(&event_name_str);
+            appointment_text.push_str("\n");
+            appointment_text.push_str(&location_name_str);
+            appointment_text.push_str("\n");
+        }
+
+        appointment_text
     }
 }

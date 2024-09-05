@@ -131,6 +131,14 @@ use ratatui::{
 
 use crate::data::Calendar;
 
+fn get_calendar_title_block(month: u32, year: i32) -> Block<'static> {
+    Block::default()
+        .borders(Borders::ALL)
+        .fg(Color::Red)
+        .add_modifier(Modifier::BOLD)
+        .title(format!(" Calendar - {}/{} ", month, year))
+}
+
 fn get_calendar_text(calendar_text: String) -> Paragraph<'static> {
     Paragraph::new(calendar_text)
         .fg(Color::Black)
@@ -139,16 +147,16 @@ fn get_calendar_text(calendar_text: String) -> Paragraph<'static> {
         .alignment(Alignment::Left)
 }
 
-fn get_calendar_block(month: u32, year: i32) -> Block<'static> {
-    Block::default()
-        .borders(Borders::ALL)
-        .fg(Color::Red)
-        .add_modifier(Modifier::BOLD)
-        .title(format!(" Calendar - {}/{} ", month, year))
+fn get_calendar_month_block() -> Block<'static> {
+    Block::default().borders(Borders::ALL).fg(Color::Black)
 }
 
-fn get_month_block() -> Block<'static> {
-    Block::default().borders(Borders::ALL).fg(Color::Black)
+fn get_appointment_text(appointment_text: String) -> Paragraph<'static> {
+    Paragraph::new(appointment_text)
+        .fg(Color::Green)
+        // .add_modifier(Modifier::BOLD)
+        .block(Block::new().padding(Padding::new(5, 0, 1, 0)))
+        .alignment(Alignment::Left)
 }
 
 fn get_appointment_block(day: u32, month: u32, year: i32) -> Block<'static> {
@@ -166,6 +174,7 @@ pub fn app_layout(frame: &mut Frame) {
     let month = calendar.current_date.month();
 
     let calendar_text = calendar.generate_calendar_text();
+    let appointment_text = calendar.generate_appointment_text(calendar.current_date);
 
     let layout = Layout::default()
         .direction(Direction::Vertical)
@@ -179,8 +188,8 @@ pub fn app_layout(frame: &mut Frame) {
         )
         .split(frame.area());
 
-    let calendar_block = get_calendar_block(month, year);
-    let month_days_block = get_month_block();
+    let calendar_block = get_calendar_title_block(month, year);
+    let month_days_block = get_calendar_month_block();
     let appointment_block = get_appointment_block(day, month, year);
 
     frame.render_widget(calendar_block.clone(), layout[0]);
@@ -189,4 +198,5 @@ pub fn app_layout(frame: &mut Frame) {
     frame.render_widget(get_calendar_text(calendar_text), layout[1]);
 
     frame.render_widget(appointment_block.clone(), layout[2]);
+    frame.render_widget(get_appointment_text(appointment_text), layout[2]);
 }
