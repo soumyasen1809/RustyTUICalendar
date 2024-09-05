@@ -123,11 +123,13 @@ impl Calendar {
         // ---------------------
 
         for ev in &events_to_search {
-            let event_name_str = String::from("Event: \t") + &ev.event_name;
-            let location_name_str = String::from("Location: \t") + &ev.location;
-            appointment_text.push_str(&event_name_str);
+            // Note: Using \t will cause the bounding box to cut lines
+            let event_name_str = String::from("Event: ") + &ev.event_name;
+            let location_name_str = String::from("Location: ") + &ev.location;
+            appointment_text.push_str(&format!("{: <8}", event_name_str));
             appointment_text.push_str("\n");
-            appointment_text.push_str(&location_name_str);
+            appointment_text.push_str(&&format!("{: <8}", location_name_str));
+            appointment_text.push_str("\n");
             appointment_text.push_str("\n");
         }
 
