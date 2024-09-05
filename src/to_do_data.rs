@@ -1,4 +1,7 @@
-use std::fs;
+use std::{
+    fs::{self, OpenOptions},
+    io::Write,
+};
 
 #[derive(Default, Debug, Clone)]
 pub struct ToDo {
@@ -107,5 +110,37 @@ impl ToDoList {
 
         self.all_todos.clear();
         self.all_todos = all_todos_json;
+    }
+
+    pub fn add_back_todos_to_json(&self) {
+        // Manually construct the updated JSON string
+        let mut updated_data = String::new();
+        updated_data.push_str("{\n    \"all_todos\": [\n");
+
+        for (i, todo) in self.all_todos.iter().enumerate() {
+            updated_data.push_str("        {\n");
+            updated_data.push_str(&format!("            \"high_prio\": {},\n", todo.high_prio));
+            updated_data.push_str(&format!(
+                "            \"todo_name\": \"{}\"\n",
+                todo.todo_name
+            ));
+            updated_data.push_str("        }");
+
+            if i < self.all_todos.len() - 1 {
+                updated_data.push_str(",");
+            }
+
+            updated_data.push_str("\n");
+        }
+
+        updated_data.push_str("    ]\n}");
+
+        // Write the updated JSON back to the file
+        let mut file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open("assets/todos.json")
+            .unwrap();
+        file.write_all(updated_data.as_bytes()).unwrap();
     }
 }
