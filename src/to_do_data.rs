@@ -102,21 +102,12 @@ impl ToDoList {
             .unwrap()
             .iter()
             .map(|todo_item| ToDo {
-                high_prio: convert_string_to_bool(
-                    todo_item["high_prio"].as_str().unwrap_or("false"),
-                ),
+                high_prio: todo_item["high_prio"].as_bool().unwrap(),
                 todo_name: todo_item["todo_name"].as_str().unwrap().to_string(),
             })
             .collect::<Vec<ToDo>>();
 
         self.all_todos.clear();
         self.all_todos = all_todos_json;
-    }
-}
-
-fn convert_string_to_bool(prio: &str) -> bool {
-    match prio {
-        "true" => true,
-        _ => false,
     }
 }
