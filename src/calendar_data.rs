@@ -133,6 +133,10 @@ impl Calendar {
             appointment_text.push_str("\n");
         }
 
+        if appointment_text.len() == 0 {
+            appointment_text.push_str(&format!("You do not have any appointments for {:?}", date))
+        }
+
         appointment_text
     }
 

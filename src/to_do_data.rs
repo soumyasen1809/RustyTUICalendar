@@ -59,21 +59,32 @@ impl ToDoList {
         let high_prio_list = &sorted_todos[0];
         let low_prio_list = &sorted_todos[1];
 
-        todo_text.push_str("High Priority");
-        todo_text.push_str("\n");
-        for items in high_prio_list.iter() {
-            // todo_text.push_str(&convert_prio_to_string(items.high_prio));
-            todo_text.push_str(&format!("{: <8}", items.todo_name));
+        if high_prio_list.len() > 0 {
+            let high_prio_title =
+                String::from("High Priority:  ") + &high_prio_list.len().to_string();
+            todo_text.push_str(&high_prio_title);
+            todo_text.push_str("\n");
+            for items in high_prio_list.iter() {
+                // todo_text.push_str(&convert_prio_to_string(items.high_prio));
+                todo_text.push_str(&format!("{: <8}", items.todo_name));
+                todo_text.push_str("\n");
+            }
             todo_text.push_str("\n");
         }
-        todo_text.push_str("\n");
 
-        todo_text.push_str("Low Priority");
-        todo_text.push_str("\n");
-        for items in low_prio_list.iter() {
-            // todo_text.push_str(&convert_prio_to_string(items.high_prio));
-            todo_text.push_str(&format!("{: <8}", items.todo_name));
+        if low_prio_list.len() > 0 {
+            let low_prio_title = String::from("Low Priority:  ") + &low_prio_list.len().to_string();
+            todo_text.push_str(&low_prio_title);
             todo_text.push_str("\n");
+            for items in low_prio_list.iter() {
+                // todo_text.push_str(&convert_prio_to_string(items.high_prio));
+                todo_text.push_str(&format!("{: <8}", items.todo_name));
+                todo_text.push_str("\n");
+            }
+        }
+
+        if todo_text.len() == 0 {
+            todo_text.push_str("You do not have any to-do items!")
         }
 
         todo_text
@@ -107,13 +118,5 @@ fn convert_string_to_bool(prio: &str) -> bool {
     match prio {
         "true" => true,
         _ => false,
-    }
-}
-
-fn convert_prio_to_string(prio: bool) -> String {
-    if prio {
-        "High Priority".to_string()
-    } else {
-        "Low Priority".to_string()
     }
 }
