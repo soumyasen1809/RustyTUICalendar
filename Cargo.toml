@@ -1,0 +1,9 @@
+[package]
+name = "cursive_tui_basics"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# cursive = "0.21.1"
+chrono = "0.4.38"
+ratatui = "0.28.1"
