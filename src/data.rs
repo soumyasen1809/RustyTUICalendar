@@ -89,8 +89,9 @@ impl Calendar {
 
         for row in month_table {
             for day in row {
-                calendar_text.push_str(&format!("{: <3}", day));
+                calendar_text.push_str(&format!("{: <8}", day));
             }
+            calendar_text.push_str("\n");
             calendar_text.push_str("\n");
         }
 

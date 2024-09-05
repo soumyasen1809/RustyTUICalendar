@@ -131,6 +131,34 @@ use ratatui::{
 
 use crate::data::Calendar;
 
+fn get_calendar_text(calendar_text: String) -> Paragraph<'static> {
+    Paragraph::new(calendar_text)
+        .fg(Color::Black)
+        .add_modifier(Modifier::BOLD)
+        .block(Block::new().padding(Padding::new(5, 5, 5, 5)))
+        .alignment(Alignment::Left)
+}
+
+fn get_calendar_block(month: u32, year: i32) -> Block<'static> {
+    Block::default()
+        .borders(Borders::ALL)
+        .fg(Color::Red)
+        .add_modifier(Modifier::BOLD)
+        .title(format!(" Calendar - {}/{} ", month, year))
+}
+
+fn get_month_block() -> Block<'static> {
+    Block::default().borders(Borders::ALL).fg(Color::Black)
+}
+
+fn get_appointment_block(day: u32, month: u32, year: i32) -> Block<'static> {
+    Block::default()
+        .borders(Borders::ALL)
+        .fg(Color::Green)
+        .add_modifier(Modifier::BOLD)
+        .title(format!(" Appointments - {}/{}/{} ", day, month, year))
+}
+
 pub fn app_layout(frame: &mut Frame) {
     let calendar = Calendar::new();
     let day = calendar.current_date.day0();
@@ -144,38 +172,21 @@ pub fn app_layout(frame: &mut Frame) {
         .constraints(
             [
                 Constraint::Percentage(5),
-                Constraint::Percentage(45),
+                Constraint::Percentage(55),
                 Constraint::Percentage(30),
             ]
             .to_vec(),
         )
         .split(frame.area());
 
-    let calendar_block = Block::default()
-        .borders(Borders::ALL)
-        .fg(Color::Red)
-        .add_modifier(Modifier::BOLD)
-        .title(format!("Calendar - {}/{}", month, year));
-
-    let month_days_block = Block::default().borders(Borders::ALL).fg(Color::Black);
-
-    let appointment_block = Block::default()
-        .borders(Borders::ALL)
-        .fg(Color::Green)
-        .add_modifier(Modifier::BOLD)
-        .title(format!("Appointments - {}/{}/{}", day, month, year));
+    let calendar_block = get_calendar_block(month, year);
+    let month_days_block = get_month_block();
+    let appointment_block = get_appointment_block(day, month, year);
 
     frame.render_widget(calendar_block.clone(), layout[0]);
-    frame.render_widget(month_days_block.clone(), layout[1]);
 
-    frame.render_widget(
-        Paragraph::new(calendar_text)
-            .fg(Color::Cyan)
-            .add_modifier(Modifier::BOLD)
-            .block(Block::new().padding(Padding::symmetric(10, 10)))
-            .alignment(Alignment::Center),
-        layout[1],
-    );
-    frame.render_widget(calendar_block.clone(), layout[2]);
+    frame.render_widget(month_days_block.clone(), layout[1]);
+    frame.render_widget(get_calendar_text(calendar_text), layout[1]);
+
     frame.render_widget(appointment_block.clone(), layout[2]);
 }
