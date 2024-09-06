@@ -41,16 +41,18 @@ fn write_user_input_to_json(input_todo_content: String, todolist: &mut ToDoList)
         .collect();
 
     if parts_input.len() >= 3 {
-        let new_todo = ToDo {
-            high_prio: parts_input[1].parse().unwrap(),
-            todo_name: parts_input[2].clone(),
-        };
+        if parts_input[0].trim().to_lowercase() == "todo" {
+            let new_todo = ToDo {
+                high_prio: parts_input[1].parse().unwrap(),
+                todo_name: parts_input[2].clone(),
+            };
 
-        todolist.add_todos_from_json();
-        todolist.all_todos.push(new_todo);
+            todolist.add_todos_from_json();
+            todolist.all_todos.push(new_todo);
 
-        // Manually contruct the json
-        todolist.add_back_todos_to_json();
+            // Manually contruct the json
+            todolist.add_back_todos_to_json();
+        }
     }
 }
 
