@@ -1,4 +1,8 @@
-use std::{fs, str::FromStr};
+use std::{
+    fs::{self, OpenOptions},
+    io::Write,
+    str::FromStr,
+};
 
 use chrono::{Datelike, NaiveDate};
 
@@ -165,8 +169,40 @@ impl Calendar {
         self.all_events.clear();
         self.all_events = events_json;
     }
+
+    pub fn add_back_events_to_json(&self) {
+        // Manually construct the updated JSON string
+        let mut updated_data = String::new();
+        updated_data.push_str("{\n");
+        updated_data.push_str(&format!("  \"current_date\": \"{}\",\n", self.current_date));
+        updated_data.push_str("  \"all_events\": [\n");
+        for (i, event) in self.all_events.iter().enumerate() {
+            updated_data.push_str("    {\n");
+            updated_data.push_str(&format!("      \"date\": \"{}\",\n", event.date));
+            updated_data.push_str(&format!(
+                "      \"event_name\": \"{}\",\n",
+                event.event_name
+            ));
+            updated_data.push_str(&format!("      \"location\": \"{}\"\n", event.location));
+            if i == self.all_events.len() - 1 {
+                updated_data.push_str("    }\n");
+            } else {
+                updated_data.push_str("    },\n");
+            }
+        }
+        updated_data.push_str("  ]\n");
+        updated_data.push_str("}\n");
+
+        // Write the updated JSON back to the file
+        let mut file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open("assets/appointments.json")
+            .unwrap();
+        file.write_all(updated_data.as_bytes()).unwrap();
+    }
 }
 
-fn string_to_naive_date(s: &str) -> NaiveDate {
+pub fn string_to_naive_date(s: &str) -> NaiveDate {
     NaiveDate::from_str(&s).unwrap()
 }

@@ -9,7 +9,10 @@ use ratatui::{
 };
 use tui_textarea::TextArea;
 
-use crate::to_do_data::{ToDo, ToDoList};
+use crate::{
+    calendar_data::{string_to_naive_date, Calendar, Events},
+    to_do_data::{ToDo, ToDoList},
+};
 
 fn get_todo_title_block() -> Block<'static> {
     Block::default()
@@ -34,7 +37,11 @@ fn get_todo_list_text(todo_list_text: String) -> Paragraph<'static> {
         .alignment(Alignment::Left)
 }
 
-fn write_user_input_to_json(input_todo_content: String, todolist: &mut ToDoList) {
+fn write_user_input_to_json(
+    input_todo_content: String,
+    todolist: &mut Option<ToDoList>,
+    calendar_list: &mut Option<Calendar>,
+) {
     let parts_input: Vec<String> = input_todo_content
         .split(',')
         .map(|s| s.trim().to_string())
@@ -47,11 +54,24 @@ fn write_user_input_to_json(input_todo_content: String, todolist: &mut ToDoList)
                 todo_name: parts_input[2].clone(),
             };
 
-            todolist.add_todos_from_json();
-            todolist.all_todos.push(new_todo);
+            todolist.as_mut().unwrap().add_todos_from_json();
+            todolist.as_mut().unwrap().all_todos.push(new_todo);
 
             // Manually contruct the json
-            todolist.add_back_todos_to_json();
+            todolist.as_mut().unwrap().add_back_todos_to_json();
+        }
+        if parts_input[0].trim().to_lowercase().contains("app") {
+            let new_event = Events {
+                date: string_to_naive_date(&parts_input[1].clone()),
+                event_name: parts_input[2].clone(),
+                location: parts_input[3].clone(),
+            };
+
+            calendar_list.as_mut().unwrap().add_appointments_from_json();
+            calendar_list.as_mut().unwrap().all_events.push(new_event);
+
+            // Manually contruct the json
+            calendar_list.as_mut().unwrap().add_back_events_to_json();
         }
     }
 }
@@ -64,14 +84,18 @@ pub fn main_todo_layout(
     let mut todolist = ToDoList::new();
     let todo_list_text = todolist.generate_todo_text();
 
-    // let input_todo_content = input_todo_textarea.lines().join("\n");
-    // write_user_input_to_json(input_todo_content, &mut todolist);
+    let calendar = Calendar::new();
+
     // Check for Enter key and process input
     if event::poll(std::time::Duration::from_millis(50)).unwrap() {
         if let Event::Key(key) = event::read().unwrap() {
             if key.code == KeyCode::Enter {
                 let input_todo_content = input_todo_textarea.lines().join("\n");
-                write_user_input_to_json(input_todo_content, &mut todolist);
+                write_user_input_to_json(
+                    input_todo_content,
+                    &mut Some(todolist),
+                    &mut Some(calendar),
+                );
                 // Clear the textarea after processing
                 *input_todo_textarea = TextArea::default();
             } else {
