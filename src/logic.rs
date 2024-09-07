@@ -13,14 +13,14 @@ impl CalendarRender {
     pub fn new() -> Self {
         Self {
             calendar: Calendar {
-                current_date: chrono::Local::now().date_naive(),
+                current_date: chrono::Local::now().date_naive().into(),
                 all_events: Vec::new(),
             },
         }
     }
 
-    pub fn next_date(&self) -> Self {
-        Self {
+    pub fn next_date(&self) -> Result<Self, Box<dyn std::error::Error>> {
+        Ok(Self {
             calendar: Calendar {
                 current_date: self
                     .calendar
@@ -29,7 +29,7 @@ impl CalendarRender {
                     .unwrap(),
                 all_events: Vec::new(),
             },
-        }
+        })
     }
 
     pub fn prev_date(&self) -> Self {

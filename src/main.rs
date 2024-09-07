@@ -32,7 +32,7 @@ fn main() -> io::Result<()> {
         .fg(Color::DarkGray)
         .add_modifier(Modifier::RAPID_BLINK);
     input_todo_textarea.set_line_number_style(style);
-    input_todo_textarea.set_placeholder_text("Enter your ToDos here ... ");
+    input_todo_textarea.set_placeholder_text("Enter your ToDos or Appointments ... \n");
 
     let mut should_quit = false;
     while !should_quit {

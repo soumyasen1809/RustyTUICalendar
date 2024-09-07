@@ -1,20 +1,19 @@
 use std::{
     fs::{self, OpenOptions},
     io::Write,
-    str::FromStr,
 };
 
-use chrono::{Datelike, Duration, NaiveDate};
+use chrono::{Datelike, Duration, NaiveDateTime};
 
 #[derive(Default, Debug, Clone)]
 pub struct Events {
-    pub date: NaiveDate,
+    pub date: NaiveDateTime,
     pub event_name: String,
     pub location: String,
 }
 
 impl Events {
-    pub fn new(date: NaiveDate, event_name: String, location: String) -> Self {
+    pub fn new(date: NaiveDateTime, event_name: String, location: String) -> Self {
         Self {
             date,
             event_name,
@@ -25,19 +24,19 @@ impl Events {
 
 #[derive(Default, Debug, Clone)]
 pub struct Calendar {
-    pub current_date: chrono::NaiveDate,
+    pub current_date: chrono::NaiveDateTime,
     pub all_events: Vec<Events>,
 }
 
 impl Calendar {
     pub fn new() -> Self {
         Self {
-            current_date: chrono::Local::now().date_naive(),
+            current_date: chrono::Local::now().naive_local(),
             all_events: Vec::new(),
         }
     }
 
-    pub fn get_current_date(&self) -> chrono::NaiveDate {
+    pub fn get_current_date(&self) -> chrono::NaiveDateTime {
         self.current_date
     }
 
@@ -51,7 +50,7 @@ impl Calendar {
             // https://doc.rust-lang.org/book/ch18-03-pattern-syntax.html
             1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
             2 => {
-                if self.current_date.leap_year() {
+                if self.current_date.date().leap_year() {
                     29
                 } else {
                     28
@@ -66,12 +65,20 @@ impl Calendar {
         self.all_events.push(event);
     }
 
-    pub fn get_event_from_calendar(&self, date: NaiveDate) -> Vec<Events> {
+    pub fn get_event_from_calendar(&self, date: NaiveDateTime) -> Vec<Events> {
+        // Since the dates are in NaiveDateTime, they need to be searched against NaiveDate only.
+        // I want to find if there are any appointments for today (NaiveDate) only.
         let indices: Vec<_> = self
             .all_events
             .iter()
             .enumerate()
-            .filter_map(|(index, ev)| if ev.date == date { Some(index) } else { None })
+            .filter_map(|(index, ev)| {
+                if ev.date.date() == date.date() {
+                    Some(index)
+                } else {
+                    None
+                }
+            })
             .collect();
 
         // Filter Map Logic: The filter_map closure should return the index if the condition is met, otherwise None (important)
@@ -88,7 +95,7 @@ impl Calendar {
     pub fn get_month_table(&self) -> Vec<Vec<u32>> {
         let first_date_of_month =
             self.current_date - Duration::days(self.current_date.day0().into());
-        //https://users.rust-lang.org/t/how-to-get-the-start-and-the-end-of-date-for-each-month-with-naivedate/81521
+        //https://users.rust-lang.org/t/how-to-get-the-start-and-the-end-of-date-for-each-month-with-NaiveDateTime/81521
         let day_of_firstdate = first_date_of_month.weekday().num_days_from_sunday();
 
         let mut iter_date = first_date_of_month;
@@ -106,7 +113,12 @@ impl Calendar {
                 }
 
                 week_layer.push(iter_date.day());
-                iter_date = iter_date.succ_opt().unwrap();
+                iter_date = iter_date
+                    .date()
+                    .succ_opt()
+                    .unwrap()
+                    .and_hms_opt(0, 0, 0)
+                    .unwrap();
             }
             days_in_month.push(week_layer.clone());
             week_layer.clear();
@@ -122,6 +134,7 @@ impl Calendar {
             calendar_text.push_str(&format!("{: <10}", weekday));
         }
         calendar_text.push('\n');
+        calendar_text.push('\n');
 
         let month_table = self.get_month_table();
 
@@ -136,7 +149,7 @@ impl Calendar {
         calendar_text
     }
 
-    pub fn generate_appointment_text(&mut self, date: NaiveDate) -> String {
+    pub fn generate_appointment_text(&mut self, date: NaiveDateTime) -> String {
         let mut appointment_text = String::new();
 
         self.add_appointments_from_json();
@@ -144,7 +157,6 @@ impl Calendar {
         let events_to_search = self.get_event_from_calendar(date);
 
         for ev in &events_to_search {
-            // Note: Using \t will cause the bounding box to cut lines
             let event_name_str = String::from("Event: ") + &ev.event_name;
             let location_name_str = String::from("Location: ") + &ev.location;
             appointment_text.push_str(&format!("{: <8}", event_name_str));
@@ -155,7 +167,10 @@ impl Calendar {
         }
 
         if appointment_text.is_empty() {
-            appointment_text.push_str(&format!("You do not have any appointments for {:?}", date))
+            appointment_text.push_str(&format!(
+                "You do not have any appointments for {:?}",
+                date.date()
+            ))
         }
 
         appointment_text
@@ -220,6 +235,11 @@ impl Calendar {
     }
 }
 
-pub fn string_to_naive_date(s: &str) -> NaiveDate {
-    NaiveDate::from_str(s).unwrap()
+pub fn string_to_naive_date(s: &str) -> NaiveDateTime {
+    if let Ok(date_time) = NaiveDateTime::parse_from_str(s, "%Y-%m-%d %H:%M:%S") {
+        date_time
+    } else {
+        let new_date_time = s.replace("T", " ");
+        NaiveDateTime::parse_from_str(&new_date_time, "%Y-%m-%d %H:%M:%S").unwrap()
+    }
 }
