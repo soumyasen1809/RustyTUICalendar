@@ -22,7 +22,7 @@ fn get_calendar_text(calendar_text: String) -> Paragraph<'static> {
     Paragraph::new(calendar_text)
         .fg(Color::DarkGray)
         .add_modifier(Modifier::BOLD)
-        .block(Block::new().padding(Padding::new(5, 5, 5, 5)))
+        .block(Block::new().padding(Padding::new(5, 5, 2, 2)))
         .alignment(Alignment::Left)
 }
 
@@ -59,8 +59,8 @@ pub fn main_calendar_layout(frame: &mut Frame, main_layout: &Rc<[Rect]>) {
         .constraints(
             [
                 Constraint::Percentage(5),
-                Constraint::Percentage(55),
-                Constraint::Percentage(40),
+                Constraint::Percentage(45),
+                Constraint::Percentage(50),
             ]
             .to_vec(),
         )

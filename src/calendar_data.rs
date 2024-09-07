@@ -85,20 +85,28 @@ impl Calendar {
     }
 
     pub fn get_month_table(&self) -> Vec<Vec<u32>> {
-        let mut linear_top_layer = Vec::new();
-        let mut linear_middle_layer = Vec::new();
-        let mut linear_bottom_layer = Vec::new();
-        for day in 1..=10_u32 {
-            linear_top_layer.push(day);
+        let mut layer1 = Vec::new();
+        let mut layer2 = Vec::new();
+        let mut layer3 = Vec::new();
+        let mut layer4 = Vec::new();
+        let mut layer5 = Vec::new();
+        for day in 1..=7_u32 {
+            layer1.push(day);
         }
-        for day in 11..=20_u32 {
-            linear_middle_layer.push(day);
+        for day in 8..=14_u32 {
+            layer2.push(day);
         }
-        for day in 21..=self.get_day_count() {
-            linear_bottom_layer.push(day);
+        for day in 15..=21_u32 {
+            layer3.push(day);
+        }
+        for day in 22..=28 {
+            layer4.push(day);
+        }
+        for day in 29..=self.get_day_count() {
+            layer5.push(day);
         }
 
-        let days_in_month = vec![linear_top_layer, linear_middle_layer, linear_bottom_layer];
+        let days_in_month = vec![layer1, layer2, layer3, layer4, layer5];
 
         days_in_month
     }
