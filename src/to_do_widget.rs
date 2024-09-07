@@ -4,7 +4,7 @@ use ratatui::{
     crossterm::event::{self, Event, KeyCode},
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Stylize},
-    widgets::{Block, Borders, Padding, Paragraph},
+    widgets::{Block, Borders, Padding, Paragraph, Wrap},
     Frame,
 };
 use tui_textarea::TextArea;
@@ -32,8 +32,9 @@ fn get_todo_user_input_block() -> Block<'static> {
 fn get_todo_list_text(todo_list_text: String) -> Paragraph<'static> {
     Paragraph::new(todo_list_text)
         .fg(Color::Blue)
-        .block(Block::new().padding(Padding::new(5, 1, 2, 1)))
+        .block(Block::new().padding(Padding::new(5, 2, 2, 2)))
         .alignment(Alignment::Left)
+        .wrap(Wrap { trim: true })
 }
 
 fn write_user_input_to_json(

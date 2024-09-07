@@ -12,6 +12,11 @@
       "location": "Conference Room A"
     },
     {
+      "date": "2024-09-08 17:09:34",
+      "event_name": "This is a long name - To wrap text input using the tui crate in Rust, you can use the Wrap struct from the tui::widgets module.",
+      "location": "Library"
+    },
+    {
       "date": "2024-09-12 17:00:00",
       "event_name": "Project Deadline",
       "location": "Office"
@@ -27,14 +32,14 @@
       "location": "Central Park"
     },
     {
-      "date": "2024-09-08 11:00:00",
+      "date": "2024-09-06 11:00:00",
       "event_name": "Design Meeting",
       "location": "Lounge C"
     },
     {
-      "date": "2024-09-06 15:00:00",
+      "date": "2024-09-08 15:00:00",
       "event_name": "Old Team Meeting",
-      "location": "Online: <Teams Link>"
+      "location": "Online: https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2%40thread.v2/0?context=%7b%22Tid%22%3a%22your-tenant-id%22%2c%22Oid%22%3a%22your-object-id%22%7d"
     },
     {
       "date": "2024-09-08 07:09:34",

@@ -4,7 +4,7 @@ use chrono::Datelike;
 use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Stylize},
-    widgets::{Block, Borders, Padding, Paragraph},
+    widgets::{Block, Borders, Padding, Paragraph, Wrap},
     Frame,
 };
 
@@ -24,6 +24,7 @@ fn get_calendar_text(calendar_text: String) -> Paragraph<'static> {
         .add_modifier(Modifier::BOLD)
         .block(Block::new().padding(Padding::new(5, 5, 2, 2)))
         .alignment(Alignment::Left)
+        .wrap(Wrap { trim: true })
 }
 
 fn get_calendar_month_block() -> Block<'static> {
@@ -33,8 +34,9 @@ fn get_calendar_month_block() -> Block<'static> {
 fn get_appointment_text(appointment_text: String) -> Paragraph<'static> {
     Paragraph::new(appointment_text)
         .fg(Color::Green)
-        .block(Block::new().padding(Padding::new(5, 0, 2, 0)))
+        .block(Block::new().padding(Padding::new(5, 2, 2, 2)))
         .alignment(Alignment::Left)
+        .wrap(Wrap { trim: true })
 }
 
 fn get_appointment_block(day: u32, month: u32, year: i32) -> Block<'static> {

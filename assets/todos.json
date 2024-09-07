@@ -15,6 +15,14 @@
         {
             "high_prio": false,
             "todo_name": "Read a book"
+        },
+        {
+            "high_prio": true,
+            "todo_name": "This is a long long text - To wrap text input using the tui crate in Rust, you can use the Wrap struct from the tui::widgets module. "
+        },
+        {
+            "high_prio": true,
+            "todo_name": "Read a novel"
         }
     ]
 }
