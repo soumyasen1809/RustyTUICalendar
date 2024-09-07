@@ -159,9 +159,12 @@ impl Calendar {
         for ev in &events_to_search {
             let event_name_str = String::from("Event: ") + &ev.event_name;
             let location_name_str = String::from("Location: ") + &ev.location;
+            let event_time_str = String::from("Time: ") + &ev.date.time().to_string();
             appointment_text.push_str(&format!("{: <8}", event_name_str));
             appointment_text.push('\n');
             appointment_text.push_str(&format!("{: <8}", location_name_str));
+            appointment_text.push('\n');
+            appointment_text.push_str(&format!("{: <8}", event_time_str));
             appointment_text.push('\n');
             appointment_text.push('\n');
         }
@@ -235,6 +238,9 @@ impl Calendar {
     }
 }
 
+/// Converts string to chrono::NaiveDateTime format
+/// Both inputs of type %Y-%m-%d %H:%M:%S and %Y-%m-%dT%H:%M:%S
+/// are supported
 pub fn string_to_naive_date(s: &str) -> NaiveDateTime {
     if let Ok(date_time) = NaiveDateTime::parse_from_str(s, "%Y-%m-%d %H:%M:%S") {
         date_time

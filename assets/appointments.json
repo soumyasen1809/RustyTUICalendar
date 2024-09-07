@@ -7,7 +7,7 @@
       "location": "Online: <Zoom Link>"
     },
     {
-      "date": "2024-09-07 10:00:00",
+      "date": "2024-09-08 10:00:00",
       "event_name": "Team Meeting",
       "location": "Conference Room A"
     },
@@ -27,7 +27,7 @@
       "location": "Central Park"
     },
     {
-      "date": "2024-09-07 11:00:00",
+      "date": "2024-09-08 11:00:00",
       "event_name": "Design Meeting",
       "location": "Lounge C"
     },
@@ -35,6 +35,11 @@
       "date": "2024-09-06 15:00:00",
       "event_name": "Old Team Meeting",
       "location": "Online: <Teams Link>"
+    },
+    {
+      "date": "2024-09-08 07:09:34",
+      "event_name": "Have a demo ready",
+      "location": "Library"
     }
   ]
 }
