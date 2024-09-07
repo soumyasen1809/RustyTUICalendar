@@ -15,14 +15,6 @@
         {
             "high_prio": false,
             "todo_name": "Read a book"
-        },
-        {
-            "high_prio": true,
-            "todo_name": "demo"
-        },
-        {
-            "high_prio": true,
-            "todo_name": "demoagain"
         }
     ]
 }

@@ -52,9 +52,9 @@ impl Calendar {
             1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
             2 => {
                 if self.current_date.leap_year() {
-                    return 29;
+                    29
                 } else {
-                    return 28;
+                    28
                 }
             }
             4 | 6 | 9 | 11 => 30,
@@ -112,8 +112,8 @@ impl Calendar {
             for day in row {
                 calendar_text.push_str(&format!("{: <8}", day));
             }
-            calendar_text.push_str("\n");
-            calendar_text.push_str("\n");
+            calendar_text.push('\n');
+            calendar_text.push('\n');
         }
 
         calendar_text
@@ -131,13 +131,13 @@ impl Calendar {
             let event_name_str = String::from("Event: ") + &ev.event_name;
             let location_name_str = String::from("Location: ") + &ev.location;
             appointment_text.push_str(&format!("{: <8}", event_name_str));
-            appointment_text.push_str("\n");
-            appointment_text.push_str(&&format!("{: <8}", location_name_str));
-            appointment_text.push_str("\n");
-            appointment_text.push_str("\n");
+            appointment_text.push('\n');
+            appointment_text.push_str(&format!("{: <8}", location_name_str));
+            appointment_text.push('\n');
+            appointment_text.push('\n');
         }
 
-        if appointment_text.len() == 0 {
+        if appointment_text.is_empty() {
             appointment_text.push_str(&format!("You do not have any appointments for {:?}", date))
         }
 
@@ -204,5 +204,5 @@ impl Calendar {
 }
 
 pub fn string_to_naive_date(s: &str) -> NaiveDate {
-    NaiveDate::from_str(&s).unwrap()
+    NaiveDate::from_str(s).unwrap()
 }

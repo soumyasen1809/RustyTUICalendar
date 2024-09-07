@@ -62,29 +62,29 @@ impl ToDoList {
         let high_prio_list = &sorted_todos[0];
         let low_prio_list = &sorted_todos[1];
 
-        if high_prio_list.len() > 0 {
+        if !high_prio_list.is_empty() {
             let high_prio_title =
                 String::from("High Priority:  ") + &high_prio_list.len().to_string();
             todo_text.push_str(&high_prio_title);
-            todo_text.push_str("\n");
+            todo_text.push('\n');
             for items in high_prio_list.iter() {
                 todo_text.push_str(&items.todo_name);
-                todo_text.push_str("\n");
+                todo_text.push('\n');
             }
-            todo_text.push_str("\n");
+            todo_text.push('\n');
         }
 
-        if low_prio_list.len() > 0 {
+        if !low_prio_list.is_empty() {
             let low_prio_title = String::from("Low Priority:  ") + &low_prio_list.len().to_string();
             todo_text.push_str(&low_prio_title);
-            todo_text.push_str("\n");
+            todo_text.push('\n');
             for items in low_prio_list.iter() {
                 todo_text.push_str(&items.todo_name);
-                todo_text.push_str("\n");
+                todo_text.push('\n');
             }
         }
 
-        if todo_text.len() == 0 {
+        if todo_text.is_empty() {
             todo_text.push_str("You do not have any to-do items!")
         }
 
@@ -127,10 +127,10 @@ impl ToDoList {
             updated_data.push_str("        }");
 
             if i < self.all_todos.len() - 1 {
-                updated_data.push_str(",");
+                updated_data.push(',');
             }
 
-            updated_data.push_str("\n");
+            updated_data.push('\n');
         }
 
         updated_data.push_str("    ]\n}");

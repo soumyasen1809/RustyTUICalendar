@@ -19,7 +19,7 @@ fn get_todo_title_block() -> Block<'static> {
         .borders(Borders::ALL)
         .fg(Color::Magenta)
         .add_modifier(Modifier::BOLD)
-        .title(format!(" To-Do "))
+        .title(" To-Do ".to_string())
 }
 
 fn get_todo_user_input_block() -> Block<'static> {
@@ -27,7 +27,7 @@ fn get_todo_user_input_block() -> Block<'static> {
         .borders(Borders::ALL)
         .fg(Color::DarkGray)
         // .add_modifier(Modifier::BOLD)
-        .title(format!(" User Input "))
+        .title(" User Input ".to_string())
 }
 
 fn get_todo_list_text(todo_list_text: String) -> Paragraph<'static> {
