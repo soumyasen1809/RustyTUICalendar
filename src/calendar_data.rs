@@ -4,7 +4,7 @@ use std::{
     str::FromStr,
 };
 
-use chrono::{Datelike, NaiveDate};
+use chrono::{Datelike, Duration, NaiveDate};
 
 #[derive(Default, Debug, Clone)]
 pub struct Events {
@@ -84,29 +84,33 @@ impl Calendar {
         event_vec
     }
 
+    // AI: Copilot generated function
     pub fn get_month_table(&self) -> Vec<Vec<u32>> {
-        let mut layer1 = Vec::new();
-        let mut layer2 = Vec::new();
-        let mut layer3 = Vec::new();
-        let mut layer4 = Vec::new();
-        let mut layer5 = Vec::new();
-        for day in 1..=7_u32 {
-            layer1.push(day);
-        }
-        for day in 8..=14_u32 {
-            layer2.push(day);
-        }
-        for day in 15..=21_u32 {
-            layer3.push(day);
-        }
-        for day in 22..=28 {
-            layer4.push(day);
-        }
-        for day in 29..=self.get_day_count() {
-            layer5.push(day);
-        }
+        let first_date_of_month =
+            self.current_date - Duration::days(self.current_date.day0().into());
+        //https://users.rust-lang.org/t/how-to-get-the-start-and-the-end-of-date-for-each-month-with-naivedate/81521
+        let day_of_firstdate = first_date_of_month.weekday().num_days_from_sunday();
 
-        let days_in_month = vec![layer1, layer2, layer3, layer4, layer5];
+        let mut iter_date = first_date_of_month;
+
+        let mut week_layer = Vec::new();
+        let mut days_in_month = Vec::new();
+
+        for week in 0..6 {
+            for day in 0..7 {
+                if week == 0 && day < day_of_firstdate as usize {
+                    continue;
+                }
+                if iter_date.month() != self.current_date.month() {
+                    continue;
+                }
+
+                week_layer.push(iter_date.day());
+                iter_date = iter_date.succ_opt().unwrap();
+            }
+            days_in_month.push(week_layer.clone());
+            week_layer.clear();
+        }
 
         days_in_month
     }

@@ -15,7 +15,7 @@ fn get_calendar_title_block(month: u32, year: i32) -> Block<'static> {
         .borders(Borders::ALL)
         .fg(Color::Red)
         .add_modifier(Modifier::BOLD)
-        .title(format!(" Calendar - {}/{} ", month, year))
+        .title(format!(" Calendar - {:?} / {:?} ", month, year))
 }
 
 fn get_calendar_text(calendar_text: String) -> Paragraph<'static> {
@@ -42,7 +42,12 @@ fn get_appointment_block(day: u32, month: u32, year: i32) -> Block<'static> {
         .borders(Borders::ALL)
         .fg(Color::Green)
         .add_modifier(Modifier::BOLD)
-        .title(format!(" Appointments - {}/{}/{} ", day, month, year))
+        .title(format!(
+            " Appointments - {:?} / {:?} / {:?} ",
+            day,
+            chrono::Month::try_from(month as u8).unwrap(),
+            year
+        ))
 }
 
 pub fn main_calendar_layout(frame: &mut Frame, main_layout: &Rc<[Rect]>) {
