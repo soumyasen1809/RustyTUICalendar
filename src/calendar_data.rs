@@ -117,12 +117,17 @@ impl Calendar {
 
     pub fn generate_calendar_text(&self) -> String {
         let mut calendar_text = String::new();
+        let weekdays_list = vec!["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+        for weekday in weekdays_list {
+            calendar_text.push_str(&format!("{: <10}", weekday));
+        }
+        calendar_text.push('\n');
 
         let month_table = self.get_month_table();
 
         for row in month_table {
             for day in row {
-                calendar_text.push_str(&format!("{: <8}", day));
+                calendar_text.push_str(&format!("{: <10}", day));
             }
             calendar_text.push('\n');
             calendar_text.push('\n');
