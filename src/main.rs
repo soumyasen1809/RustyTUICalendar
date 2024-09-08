@@ -2,7 +2,7 @@
 use std::io::{self, stdout};
 
 use calendar_data::Calendar;
-use chrono::{Duration, NaiveDateTime};
+use chrono::{Months, NaiveDateTime};
 use ratatui::{
     backend::CrosstermBackend,
     crossterm::{
@@ -55,10 +55,19 @@ fn handle_events(textarea: &mut TextArea, calendar_data: &mut NaiveDateTime) -> 
         if let Event::Key(key) = event::read()? {
             match key.code {
                 KeyCode::Esc => return Ok(true),
-                KeyCode::F(2) => *calendar_data += Duration::days(30),
-                KeyCode::F(1) => *calendar_data -= Duration::days(30),
+                KeyCode::F(1) => {
+                    // Go to the prev month
+                    *calendar_data = calendar_data.checked_sub_months(Months::new(1)).unwrap();
+                    // return Ok(false);
+                }
+                KeyCode::F(2) => {
+                    // Go to the next month
+                    *calendar_data = calendar_data.checked_add_months(Months::new(1)).unwrap();
+                    // return Ok(false);
+                }
                 _ => {
                     textarea.input(Input::from(key));
+                    // return Ok(false);
                 }
             };
         }
