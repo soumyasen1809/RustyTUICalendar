@@ -80,6 +80,7 @@ pub fn main_todo_layout(
     frame: &mut Frame,
     main_layout: &Rc<[Rect]>,
     input_todo_textarea: &mut TextArea,
+    is_writing_mode: bool,
 ) {
     let mut todolist = ToDoList::new();
     let todo_list_text = todolist.generate_todo_text();
@@ -87,22 +88,25 @@ pub fn main_todo_layout(
     let calendar = Calendar::new();
 
     // Check for Enter key and process input
-    if event::poll(std::time::Duration::from_millis(50)).unwrap() {
-        if let Event::Key(key) = event::read().unwrap() {
-            if key.code == KeyCode::Delete {
-                // Clear the textarea
-                *input_todo_textarea = TextArea::default();
-            } else if key.code == KeyCode::Enter {
-                let input_todo_content = input_todo_textarea.lines().join("\n");
-                write_user_input_to_json(
-                    input_todo_content,
-                    &mut Some(todolist),
-                    &mut Some(calendar),
-                );
-                // Clear the textarea after processing
-                *input_todo_textarea = TextArea::default();
-            } else {
-                input_todo_textarea.input(tui_textarea::Input::from(key));
+    if is_writing_mode {
+        // Can write only when the writing mode is ON
+        if event::poll(std::time::Duration::from_millis(50)).unwrap() {
+            if let Event::Key(key) = event::read().unwrap() {
+                if key.code == KeyCode::Delete {
+                    // Clear the textarea
+                    *input_todo_textarea = TextArea::default();
+                } else if key.code == KeyCode::Enter {
+                    let input_todo_content = input_todo_textarea.lines().join("\n");
+                    write_user_input_to_json(
+                        input_todo_content,
+                        &mut Some(todolist),
+                        &mut Some(calendar),
+                    );
+                    // Clear the textarea after processing
+                    *input_todo_textarea = TextArea::default();
+                } else {
+                    input_todo_textarea.input(tui_textarea::Input::from(key));
+                }
             }
         }
     }

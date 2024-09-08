@@ -12,6 +12,7 @@ pub fn app_layout(
     frame: &mut Frame,
     input_todo_textarea: &mut TextArea,
     calendar_date: &mut NaiveDateTime,
+    is_writing_mode: bool,
 ) {
     let main_layout = Layout::default()
         .direction(Direction::Horizontal)
@@ -19,5 +20,5 @@ pub fn app_layout(
         .split(frame.area());
 
     main_calendar_layout(frame, &main_layout, calendar_date);
-    main_todo_layout(frame, &main_layout, input_todo_textarea);
+    main_todo_layout(frame, &main_layout, input_todo_textarea, is_writing_mode);
 }

@@ -38,11 +38,23 @@ fn main() -> io::Result<()> {
 
     let calendar = Calendar::new();
     let mut calendar_date = calendar.current_date;
+    let mut is_writing_mode = false;
     let mut should_quit = false;
 
     while !should_quit {
-        terminal.draw(|f| app_layout(f, &mut input_todo_textarea, &mut calendar_date))?;
-        should_quit = handle_events(&mut input_todo_textarea, &mut calendar_date)?;
+        terminal.draw(|f| {
+            app_layout(
+                f,
+                &mut input_todo_textarea,
+                &mut calendar_date,
+                is_writing_mode,
+            )
+        })?;
+        should_quit = handle_events(
+            &mut input_todo_textarea,
+            &mut calendar_date,
+            &mut is_writing_mode,
+        )?;
     }
 
     disable_raw_mode()?;
@@ -50,7 +62,11 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-fn handle_events(textarea: &mut TextArea, calendar_data: &mut NaiveDateTime) -> io::Result<bool> {
+fn handle_events(
+    textarea: &mut TextArea,
+    calendar_data: &mut NaiveDateTime,
+    is_writing_mode: &mut bool,
+) -> io::Result<bool> {
     if event::poll(std::time::Duration::from_millis(50))? {
         if let Event::Key(key) = event::read()? {
             match key.code {
@@ -58,16 +74,25 @@ fn handle_events(textarea: &mut TextArea, calendar_data: &mut NaiveDateTime) -> 
                 KeyCode::F(1) => {
                     // Go to the prev month
                     *calendar_data = calendar_data.checked_sub_months(Months::new(1)).unwrap();
-                    // return Ok(false);
                 }
                 KeyCode::F(2) => {
                     // Go to the next month
                     *calendar_data = calendar_data.checked_add_months(Months::new(1)).unwrap();
-                    // return Ok(false);
+                }
+                KeyCode::F(3) => {
+                    if *is_writing_mode {
+                        // If writing mode is ON, F3 turns it OFF
+                        *is_writing_mode = false
+                    } else {
+                        // If writing mode is OFF, F3 turns it ON
+                        *is_writing_mode = true
+                    };
                 }
                 _ => {
-                    textarea.input(Input::from(key));
-                    // return Ok(false);
+                    if *is_writing_mode {
+                        // User can only write if the writing_mode is ON
+                        textarea.input(Input::from(key));
+                    }
                 }
             };
         }
