@@ -1,5 +1,6 @@
 use std::rc::Rc;
 
+use chrono::NaiveDateTime;
 use ratatui::{
     crossterm::event::{self, Event, KeyCode},
     layout::{Alignment, Constraint, Direction, Layout, Rect},
@@ -38,6 +39,7 @@ fn write_user_input_to_json(
     input_todo_content: String,
     todolist: &mut Option<ToDoList>,
     calendar_list: &mut Option<Calendar>,
+    calendar_date: &mut NaiveDateTime,
 ) {
     let parts_input: Vec<String> = input_todo_content
         .split(',')
@@ -45,6 +47,7 @@ fn write_user_input_to_json(
         .collect();
 
     if parts_input.len() >= 3 {
+        // Add events to ToDo or Calendar
         if parts_input[0].trim().to_lowercase() == "todo" {
             let new_todo = ToDo {
                 high_prio: parts_input[1].parse().unwrap(),
@@ -70,6 +73,11 @@ fn write_user_input_to_json(
             // Manually contruct the json
             calendar_list.as_mut().unwrap().add_back_events_to_json();
         }
+    } else if parts_input.len() == 2 {
+        // Search for an appointment
+        if parts_input[0].trim().to_lowercase().contains("find") {
+            *calendar_date = string_to_naive_date(&parts_input[1].clone());
+        }
     }
 }
 
@@ -78,6 +86,7 @@ pub fn main_todo_layout(
     main_layout: &Rc<[Rect]>,
     input_todo_textarea: &mut TextArea,
     is_writing_mode: bool,
+    calendar_date: &mut NaiveDateTime,
 ) {
     let mut todolist = ToDoList::new();
     let todo_list_text = todolist.generate_todo_text();
@@ -98,6 +107,7 @@ pub fn main_todo_layout(
                         input_todo_content,
                         &mut Some(todolist),
                         &mut Some(calendar),
+                        calendar_date,
                     );
                     // Clear the textarea after processing
                     *input_todo_textarea = TextArea::default();

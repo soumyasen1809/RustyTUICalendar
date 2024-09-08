@@ -20,5 +20,11 @@ pub fn app_layout(
         .split(frame.area());
 
     main_calendar_layout(frame, &main_layout, calendar_date);
-    main_todo_layout(frame, &main_layout, input_todo_textarea, is_writing_mode);
+    main_todo_layout(
+        frame,
+        &main_layout,
+        input_todo_textarea,
+        is_writing_mode,
+        calendar_date,
+    );
 }
