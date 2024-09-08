@@ -4,7 +4,7 @@ use std::{
     io::Write,
 };
 
-use chrono::{Datelike, Duration, NaiveDateTime};
+use chrono::{Datelike, Duration, Local, NaiveDateTime};
 
 #[derive(Default, Debug, Clone)]
 pub struct Events {
@@ -149,7 +149,13 @@ impl Calendar {
                                                                                // Note that the empty spaces are ignored in during rendering the frame
                                                                                // and so, we need to use the non-breaking space character (\u{00A0}) instead
                 } else {
-                    calendar_text.push_str(&format!("  {: <3} ", day));
+                    let today = Local::now().naive_local().date();
+                    if (calendar_date.date() == today) && (day == today.day()) {
+                        // Mark today's date in the calendar view
+                        calendar_text.push_str(&format!(" ({:<1}) ", day));
+                    } else {
+                        calendar_text.push_str(&format!("  {: <3} ", day));
+                    }
                 }
             }
             calendar_text.push('\n');
