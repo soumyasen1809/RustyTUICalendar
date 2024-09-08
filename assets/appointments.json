@@ -1,0 +1,50 @@
+{
+  "current_date": "2024-09-06 00:00:00",
+  "all_events": [
+    {
+      "date": "2024-09-05 09:00:00",
+      "event_name": "Company Introduction",
+      "location": "Online: <Zoom Link>"
+    },
+    {
+      "date": "2024-09-08 10:00:00",
+      "event_name": "Team Meeting",
+      "location": "Conference Room A"
+    },
+    {
+      "date": "2024-09-08 17:09:34",
+      "event_name": "This is a long name - To wrap text input using the tui crate in Rust, you can use the Wrap struct from the tui::widgets module.",
+      "location": "Library"
+    },
+    {
+      "date": "2024-09-12 17:00:00",
+      "event_name": "Project Deadline",
+      "location": "Office"
+    },
+    {
+      "date": "2024-09-15 14:00:00",
+      "event_name": "Client Presentation",
+      "location": "Client's Office"
+    },
+    {
+      "date": "2024-09-20 12:00:00",
+      "event_name": "Company Picnic",
+      "location": "Central Park"
+    },
+    {
+      "date": "2024-09-06 11:00:00",
+      "event_name": "Design Meeting",
+      "location": "Lounge C"
+    },
+    {
+      "date": "2024-09-08 15:00:00",
+      "event_name": "Old Team Meeting",
+      "location": "Online: https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2%40thread.v2/0?context=%7b%22Tid%22%3a%22your-tenant-id%22%2c%22Oid%22%3a%22your-object-id%22%7d"
+    },
+    {
+      "date": "2024-09-08 07:09:34",
+      "event_name": "Have a demo ready",
+      "location": "Library"
+    }
+  ]
+}
