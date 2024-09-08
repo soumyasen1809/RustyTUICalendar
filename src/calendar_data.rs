@@ -129,10 +129,15 @@ impl Calendar {
 
     pub fn generate_calendar_text(&self, calendar_date: &NaiveDateTime) -> String {
         let mut calendar_text = String::new();
-        let weekdays_list = vec!["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]; // Start week from Monday
+        let weekdays_list = vec![
+            "  Su  ", "  Mo  ", "  Tu  ", "  We  ", "  Th  ", "  Fr  ", "  Sa  ",
+        ]; // Start week from Monday
         for weekday in weekdays_list {
             calendar_text.push_str(&format!("{: <3}", weekday));
         }
+        calendar_text.push('\n');
+        calendar_text.push_str("--------------------------------------");
+        calendar_text.push('\n');
         calendar_text.push('\n');
 
         let month_table = self.get_month_table(calendar_date);
@@ -140,13 +145,14 @@ impl Calendar {
         for row in month_table {
             for day in row {
                 if day == 0 {
-                    calendar_text.push_str(&format!("{: <3}", "\u{00A0}")); // Empty space for days outside the current month
-                                                                            // Note that the empty spaces are ignored in during rendering the frame
-                                                                            // and so, we need to use the non-breaking space character (\u{00A0}) instead
+                    calendar_text.push_str(&format!("  {: <3} ", "\u{00A0}")); // Empty space for days outside the current month
+                                                                               // Note that the empty spaces are ignored in during rendering the frame
+                                                                               // and so, we need to use the non-breaking space character (\u{00A0}) instead
                 } else {
-                    calendar_text.push_str(&format!("{: <3}", day));
+                    calendar_text.push_str(&format!("  {: <3} ", day));
                 }
             }
+            calendar_text.push('\n');
             calendar_text.push('\n');
         }
 
