@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use chrono::Datelike;
+use chrono::{Datelike, NaiveDateTime};
 use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Stylize},
@@ -52,14 +52,18 @@ fn get_appointment_block(day: u32, month: u32, year: i32) -> Block<'static> {
         ))
 }
 
-pub fn main_calendar_layout(frame: &mut Frame, main_layout: &Rc<[Rect]>) {
+pub fn main_calendar_layout(
+    frame: &mut Frame,
+    main_layout: &Rc<[Rect]>,
+    calendar_date: &mut NaiveDateTime,
+) {
     let mut calendar = Calendar::new();
-    let day = calendar.current_date.day();
-    let year = calendar.current_date.year();
-    let month = calendar.current_date.month();
+    let day = calendar_date.day();
+    let year = calendar_date.year();
+    let month = calendar_date.month();
 
     let calendar_text = calendar.generate_calendar_text();
-    let appointment_text = calendar.generate_appointment_text(calendar.current_date);
+    let appointment_text = calendar.generate_appointment_text(*calendar_date);
 
     let layout = Layout::default()
         .direction(Direction::Vertical)

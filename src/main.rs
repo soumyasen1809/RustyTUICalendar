@@ -1,6 +1,8 @@
 // use cursive::{event::Key, views::Dialog};
 use std::io::{self, stdout};
 
+use calendar_data::Calendar;
+use chrono::{Duration, NaiveDateTime};
 use ratatui::{
     backend::CrosstermBackend,
     crossterm::{
@@ -34,10 +36,12 @@ fn main() -> io::Result<()> {
     input_todo_textarea.set_line_number_style(style);
     input_todo_textarea.set_placeholder_text("Enter your ToDos or Appointments ... \n");
 
+    let calendar = Calendar::new();
+    let mut calendar_date = calendar.current_date;
     let mut should_quit = false;
     while !should_quit {
-        terminal.draw(|f| app_layout(f, &mut input_todo_textarea))?;
-        should_quit = handle_events(&mut input_todo_textarea)?;
+        terminal.draw(|f| app_layout(f, &mut input_todo_textarea, &mut calendar_date))?;
+        should_quit = handle_events(&mut input_todo_textarea, &mut calendar_date)?;
     }
 
     disable_raw_mode()?;
@@ -45,12 +49,16 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-fn handle_events(textarea: &mut TextArea) -> io::Result<bool> {
+fn handle_events(textarea: &mut TextArea, calendar_data: &mut NaiveDateTime) -> io::Result<bool> {
     if event::poll(std::time::Duration::from_millis(50))? {
         if let Event::Key(key) = event::read()? {
             match key.code {
                 KeyCode::Esc => return Ok(true),
-                _ => textarea.input(Input::from(key)),
+                KeyCode::F(2) => *calendar_data = *calendar_data + Duration::days(30),
+                KeyCode::F(1) => *calendar_data = *calendar_data - Duration::days(30),
+                _ => {
+                    textarea.input(Input::from(key));
+                }
             };
         }
     }
