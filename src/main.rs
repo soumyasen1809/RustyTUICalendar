@@ -34,7 +34,7 @@ fn main() -> io::Result<()> {
         .fg(Color::DarkGray)
         .add_modifier(Modifier::RAPID_BLINK);
     input_todo_textarea.set_line_number_style(style);
-    input_todo_textarea.set_placeholder_text("Enter your ToDos or Appointments ... \n");
+    input_todo_textarea.set_placeholder_text("F3 to start entering events ... \n");
 
     let calendar = Calendar::new();
     let mut calendar_date = calendar.current_date;
@@ -84,12 +84,14 @@ fn handle_events(
                         // If writing mode is ON, F3 turns it OFF
                         *is_writing_mode = false
                     } else {
+                        textarea.set_placeholder_text("");
                         // If writing mode is OFF, F3 turns it ON
                         *is_writing_mode = true
                     };
                 }
                 _ => {
                     if *is_writing_mode {
+                        textarea.set_placeholder_text("");
                         // User can only write if the writing_mode is ON
                         textarea.input(Input::from(key));
                     }

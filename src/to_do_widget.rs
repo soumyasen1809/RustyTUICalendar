@@ -23,10 +23,7 @@ fn get_todo_title_block() -> Block<'static> {
 }
 
 fn get_todo_user_input_block() -> Block<'static> {
-    Block::default()
-        .borders(Borders::ALL)
-        .fg(Color::DarkGray)
-        .title(" User Input ".to_string())
+    Block::default().borders(Borders::ALL).fg(Color::DarkGray)
 }
 
 fn get_todo_list_text(todo_list_text: String) -> Paragraph<'static> {
