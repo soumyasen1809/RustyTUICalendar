@@ -39,6 +39,7 @@ fn main() -> io::Result<()> {
     let calendar = Calendar::new();
     let mut calendar_date = calendar.current_date;
     let mut should_quit = false;
+
     while !should_quit {
         terminal.draw(|f| app_layout(f, &mut input_todo_textarea, &mut calendar_date))?;
         should_quit = handle_events(&mut input_todo_textarea, &mut calendar_date)?;

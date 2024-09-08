@@ -62,7 +62,7 @@ pub fn main_calendar_layout(
     let year = calendar_date.year();
     let month = calendar_date.month();
 
-    let calendar_text = calendar.generate_calendar_text();
+    let calendar_text = calendar.generate_calendar_text(calendar_date);
     let appointment_text = calendar.generate_appointment_text(*calendar_date);
 
     let layout = Layout::default()
