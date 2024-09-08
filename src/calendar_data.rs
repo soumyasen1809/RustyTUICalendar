@@ -161,8 +161,8 @@ impl Calendar {
         let events_to_search = self.get_event_from_calendar(date);
 
         for ev in &events_to_search {
-            let event_name_str = String::from("Event: ") + &ev.event_name;
-            let location_name_str = String::from("Location: ") + &ev.location;
+            let event_name_str = String::from("- Event: ") + &ev.event_name;
+            let location_name_str = String::from("  Location: ") + &ev.location;
             let event_time_str = String::from("Time: ") + &ev.date.time().to_string();
             appointment_text.push_str(&format!("{: <8}", event_name_str));
             appointment_text.push('\n');

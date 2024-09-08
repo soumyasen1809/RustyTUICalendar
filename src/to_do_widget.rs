@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use chrono::NaiveDateTime;
+use chrono::{Local, NaiveDateTime};
 use ratatui::{
     crossterm::event::{self, Event, KeyCode},
     layout::{Alignment, Constraint, Direction, Layout, Rect},
@@ -84,6 +84,11 @@ fn write_user_input_to_json(
             } else {
                 *calendar_date = string_to_naive_date(&parts_input[1].clone());
             }
+        }
+    } else if parts_input.len() == 1 {
+        // Jump to today
+        if parts_input[0].trim().to_lowercase().contains("today") {
+            *calendar_date = Local::now().naive_local();
         }
     }
 }
