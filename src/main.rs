@@ -54,8 +54,8 @@ fn handle_events(textarea: &mut TextArea, calendar_data: &mut NaiveDateTime) -> 
         if let Event::Key(key) = event::read()? {
             match key.code {
                 KeyCode::Esc => return Ok(true),
-                KeyCode::F(2) => *calendar_data = *calendar_data + Duration::days(30),
-                KeyCode::F(1) => *calendar_data = *calendar_data - Duration::days(30),
+                KeyCode::F(2) => *calendar_data += Duration::days(30),
+                KeyCode::F(1) => *calendar_data -= Duration::days(30),
                 _ => {
                     textarea.input(Input::from(key));
                 }
