@@ -1,5 +1,6 @@
 use std::rc::Rc;
 
+use chrono::{Local, NaiveDateTime};
 use ratatui::{
     crossterm::event::{self, Event, KeyCode},
     layout::{Alignment, Constraint, Direction, Layout, Rect},
@@ -23,10 +24,7 @@ fn get_todo_title_block() -> Block<'static> {
 }
 
 fn get_todo_user_input_block() -> Block<'static> {
-    Block::default()
-        .borders(Borders::ALL)
-        .fg(Color::DarkGray)
-        .title(" User Input ".to_string())
+    Block::default().borders(Borders::ALL).fg(Color::DarkGray)
 }
 
 fn get_todo_list_text(todo_list_text: String) -> Paragraph<'static> {
@@ -41,6 +39,7 @@ fn write_user_input_to_json(
     input_todo_content: String,
     todolist: &mut Option<ToDoList>,
     calendar_list: &mut Option<Calendar>,
+    calendar_date: &mut NaiveDateTime,
 ) {
     let parts_input: Vec<String> = input_todo_content
         .split(',')
@@ -48,6 +47,7 @@ fn write_user_input_to_json(
         .collect();
 
     if parts_input.len() >= 3 {
+        // Add events to ToDo or Calendar
         if parts_input[0].trim().to_lowercase() == "todo" {
             let new_todo = ToDo {
                 high_prio: parts_input[1].parse().unwrap(),
@@ -73,6 +73,23 @@ fn write_user_input_to_json(
             // Manually contruct the json
             calendar_list.as_mut().unwrap().add_back_events_to_json();
         }
+    } else if parts_input.len() == 2 {
+        // Search for an appointment
+        if parts_input[0].trim().to_lowercase().contains("find") {
+            if parts_input[1].clone().len() < 19 {
+                // If less than 19, then it is in NaiveDate format => need to change it to NaiveDateTime
+                let date_time_formated =
+                    String::from(parts_input[1].clone()) + &String::from(" 00:00:00"); // converting string to NaiveDateTime format
+                *calendar_date = string_to_naive_date(&date_time_formated);
+            } else {
+                *calendar_date = string_to_naive_date(&parts_input[1].clone());
+            }
+        }
+    } else if parts_input.len() == 1 {
+        // Jump to today
+        if parts_input[0].trim().to_lowercase().contains("today") {
+            *calendar_date = Local::now().naive_local();
+        }
     }
 }
 
@@ -80,6 +97,8 @@ pub fn main_todo_layout(
     frame: &mut Frame,
     main_layout: &Rc<[Rect]>,
     input_todo_textarea: &mut TextArea,
+    is_writing_mode: bool,
+    calendar_date: &mut NaiveDateTime,
 ) {
     let mut todolist = ToDoList::new();
     let todo_list_text = todolist.generate_todo_text();
@@ -87,22 +106,26 @@ pub fn main_todo_layout(
     let calendar = Calendar::new();
 
     // Check for Enter key and process input
-    if event::poll(std::time::Duration::from_millis(50)).unwrap() {
-        if let Event::Key(key) = event::read().unwrap() {
-            if key.code == KeyCode::Delete {
-                // Clear the textarea
-                *input_todo_textarea = TextArea::default();
-            } else if key.code == KeyCode::Enter {
-                let input_todo_content = input_todo_textarea.lines().join("\n");
-                write_user_input_to_json(
-                    input_todo_content,
-                    &mut Some(todolist),
-                    &mut Some(calendar),
-                );
-                // Clear the textarea after processing
-                *input_todo_textarea = TextArea::default();
-            } else {
-                input_todo_textarea.input(tui_textarea::Input::from(key));
+    if is_writing_mode {
+        // Can write only when the writing mode is ON
+        if event::poll(std::time::Duration::from_millis(50)).unwrap() {
+            if let Event::Key(key) = event::read().unwrap() {
+                if key.code == KeyCode::Delete {
+                    // Clear the textarea
+                    *input_todo_textarea = TextArea::default();
+                } else if key.code == KeyCode::Enter {
+                    let input_todo_content = input_todo_textarea.lines().join("\n");
+                    write_user_input_to_json(
+                        input_todo_content,
+                        &mut Some(todolist),
+                        &mut Some(calendar),
+                        calendar_date,
+                    );
+                    // Clear the textarea after processing
+                    *input_todo_textarea = TextArea::default();
+                } else {
+                    input_todo_textarea.input(tui_textarea::Input::from(key));
+                }
             }
         }
     }

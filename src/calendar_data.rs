@@ -1,9 +1,10 @@
+#![allow(clippy::needless_range_loop)]
 use std::{
     fs::{self, OpenOptions},
     io::Write,
 };
 
-use chrono::{Datelike, Duration, NaiveDateTime};
+use chrono::{Datelike, Duration, Local, NaiveDateTime};
 
 #[derive(Default, Debug, Clone)]
 pub struct Events {
@@ -92,55 +93,70 @@ impl Calendar {
     }
 
     // AI: Copilot generated function
-    pub fn get_month_table(&self) -> Vec<Vec<u32>> {
-        let first_date_of_month =
-            self.current_date - Duration::days(self.current_date.day0().into());
-        //https://users.rust-lang.org/t/how-to-get-the-start-and-the-end-of-date-for-each-month-with-NaiveDateTime/81521
-        let day_of_firstdate = first_date_of_month.weekday().num_days_from_sunday();
+    /// Get the month table for a given month
+    pub fn get_month_table(&self, calendar_date: &NaiveDateTime) -> Vec<Vec<u32>> {
+        // let first_date_of_month = calendar_date.with_day(1).unwrap();
+        let first_date_of_month = *calendar_date - Duration::days(calendar_date.day0().into());
+        let day_of_firstdate = first_date_of_month.weekday().num_days_from_sunday(); // Start week from Sunday
 
         let mut iter_date = first_date_of_month;
 
-        let mut week_layer = Vec::new();
+        let mut week_layer = vec![0; 7]; // Initialize with 0s
         let mut days_in_month = Vec::new();
 
-        for week in 0..6 {
+        for _week in 0..6 {
             for day in 0..7 {
-                if week == 0 && day < day_of_firstdate as usize {
-                    continue;
+                if days_in_month.is_empty() && day < day_of_firstdate as usize {
+                    week_layer[day] = 0; // Fill with 0 for days before the first day of the month
+                } else if iter_date.month() == calendar_date.month() {
+                    week_layer[day] = iter_date.day();
+                    iter_date = iter_date
+                        .date()
+                        .succ_opt()
+                        .unwrap()
+                        .and_hms_opt(0, 0, 0)
+                        .unwrap();
+                } else {
+                    week_layer[day] = 0; // Fill with 0 for days after the last day of the month
                 }
-                if iter_date.month() != self.current_date.month() {
-                    continue;
-                }
-
-                week_layer.push(iter_date.day());
-                iter_date = iter_date
-                    .date()
-                    .succ_opt()
-                    .unwrap()
-                    .and_hms_opt(0, 0, 0)
-                    .unwrap();
             }
             days_in_month.push(week_layer.clone());
-            week_layer.clear();
+            week_layer = vec![0; 7];
         }
 
         days_in_month
     }
 
-    pub fn generate_calendar_text(&self) -> String {
+    pub fn generate_calendar_text(&self, calendar_date: &NaiveDateTime) -> String {
         let mut calendar_text = String::new();
-        let weekdays_list = vec!["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+        let weekdays_list = vec![
+            "  Su  ", "  Mo  ", "  Tu  ", "  We  ", "  Th  ", "  Fr  ", "  Sa  ",
+        ]; // Start week from Monday
         for weekday in weekdays_list {
-            calendar_text.push_str(&format!("{: <10}", weekday));
+            calendar_text.push_str(&format!("{: <3}", weekday));
         }
+        calendar_text.push('\n');
+        calendar_text.push_str("--------------------------------------");
         calendar_text.push('\n');
         calendar_text.push('\n');
 
-        let month_table = self.get_month_table();
+        let month_table = self.get_month_table(calendar_date);
 
         for row in month_table {
             for day in row {
-                calendar_text.push_str(&format!("{: <10}", day));
+                if day == 0 {
+                    calendar_text.push_str(&format!("  {: <3} ", "\u{00A0}")); // Empty space for days outside the current month
+                                                                               // Note that the empty spaces are ignored in during rendering the frame
+                                                                               // and so, we need to use the non-breaking space character (\u{00A0}) instead
+                } else {
+                    let today = Local::now().naive_local().date();
+                    if (calendar_date.date() == today) && (day == today.day()) {
+                        // Mark today's date in the calendar view
+                        calendar_text.push_str(&format!(" ({:<1}) ", day));
+                    } else {
+                        calendar_text.push_str(&format!("  {: <3} ", day));
+                    }
+                }
             }
             calendar_text.push('\n');
             calendar_text.push('\n');
@@ -157,8 +173,8 @@ impl Calendar {
         let events_to_search = self.get_event_from_calendar(date);
 
         for ev in &events_to_search {
-            let event_name_str = String::from("Event: ") + &ev.event_name;
-            let location_name_str = String::from("Location: ") + &ev.location;
+            let event_name_str = String::from("- Event: ") + &ev.event_name;
+            let location_name_str = String::from("  Location: ") + &ev.location;
             let event_time_str = String::from("Time: ") + &ev.date.time().to_string();
             appointment_text.push_str(&format!("{: <8}", event_name_str));
             appointment_text.push('\n');

@@ -1,6 +1,8 @@
 // use cursive::{event::Key, views::Dialog};
 use std::io::{self, stdout};
 
+use calendar_data::Calendar;
+use chrono::{Months, NaiveDateTime};
 use ratatui::{
     backend::CrosstermBackend,
     crossterm::{
@@ -32,12 +34,27 @@ fn main() -> io::Result<()> {
         .fg(Color::DarkGray)
         .add_modifier(Modifier::RAPID_BLINK);
     input_todo_textarea.set_line_number_style(style);
-    input_todo_textarea.set_placeholder_text("Enter your ToDos or Appointments ... \n");
+    input_todo_textarea.set_placeholder_text("F3 to start entering events ... \n");
 
+    let calendar = Calendar::new();
+    let mut calendar_date = calendar.current_date;
+    let mut is_writing_mode = false;
     let mut should_quit = false;
+
     while !should_quit {
-        terminal.draw(|f| app_layout(f, &mut input_todo_textarea))?;
-        should_quit = handle_events(&mut input_todo_textarea)?;
+        terminal.draw(|f| {
+            app_layout(
+                f,
+                &mut input_todo_textarea,
+                &mut calendar_date,
+                is_writing_mode,
+            )
+        })?;
+        should_quit = handle_events(
+            &mut input_todo_textarea,
+            &mut calendar_date,
+            &mut is_writing_mode,
+        )?;
     }
 
     disable_raw_mode()?;
@@ -45,12 +62,40 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-fn handle_events(textarea: &mut TextArea) -> io::Result<bool> {
+fn handle_events(
+    textarea: &mut TextArea,
+    calendar_data: &mut NaiveDateTime,
+    is_writing_mode: &mut bool,
+) -> io::Result<bool> {
     if event::poll(std::time::Duration::from_millis(50))? {
         if let Event::Key(key) = event::read()? {
             match key.code {
                 KeyCode::Esc => return Ok(true),
-                _ => textarea.input(Input::from(key)),
+                KeyCode::F(1) => {
+                    // Go to the prev month
+                    *calendar_data = calendar_data.checked_sub_months(Months::new(1)).unwrap();
+                }
+                KeyCode::F(2) => {
+                    // Go to the next month
+                    *calendar_data = calendar_data.checked_add_months(Months::new(1)).unwrap();
+                }
+                KeyCode::F(3) => {
+                    if *is_writing_mode {
+                        // If writing mode is ON, F3 turns it OFF
+                        *is_writing_mode = false
+                    } else {
+                        textarea.set_placeholder_text("");
+                        // If writing mode is OFF, F3 turns it ON
+                        *is_writing_mode = true
+                    };
+                }
+                _ => {
+                    if *is_writing_mode {
+                        textarea.set_placeholder_text("");
+                        // User can only write if the writing_mode is ON
+                        textarea.input(Input::from(key));
+                    }
+                }
             };
         }
     }

@@ -64,21 +64,28 @@ impl ToDoList {
 
         if !high_prio_list.is_empty() {
             let high_prio_title =
-                String::from("High Priority:  ") + &high_prio_list.len().to_string();
+                String::from("High priority items:  ") + &high_prio_list.len().to_string();
             todo_text.push_str(&high_prio_title);
             todo_text.push('\n');
-            for items in high_prio_list.iter() {
+            todo_text.push('\n');
+            for (count, items) in high_prio_list.iter().enumerate() {
+                todo_text.push_str(&(count.to_string() + &String::from(". ")));
                 todo_text.push_str(&items.todo_name);
                 todo_text.push('\n');
             }
             todo_text.push('\n');
+            todo_text.push('\n');
+            todo_text.push('\n');
         }
 
         if !low_prio_list.is_empty() {
-            let low_prio_title = String::from("Low Priority:  ") + &low_prio_list.len().to_string();
+            let low_prio_title =
+                String::from("Low priority items:  ") + &low_prio_list.len().to_string();
             todo_text.push_str(&low_prio_title);
             todo_text.push('\n');
-            for items in low_prio_list.iter() {
+            todo_text.push('\n');
+            for (count, items) in low_prio_list.iter().enumerate() {
+                todo_text.push_str(&(count.to_string() + &String::from(". ")));
                 todo_text.push_str(&items.todo_name);
                 todo_text.push('\n');
             }
