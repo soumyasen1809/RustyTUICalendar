@@ -5,9 +5,9 @@ RustyTUICalendar is a terminal-based calendar application written in Rust. It le
 ## Features
 
 - Display a monthly calendar starting from Sunday
-- Add, edit, and delete events
+- Add and delete events
 - Highlight current date
-- Add, edit and delete To-Do list
+- Add and delete To-Do list
 - User-friendly terminal interface
 
 ## Installation
@@ -17,21 +17,40 @@ To install RustyTUICalendar, you need to have Rust and Cargo installed on your s
 Clone the repository:
 
 ```sh
-git clone https://github.com/soumyasen1809/RustyTUICalendar.git
-cd RustyTUICalendar
+$ git clone https://github.com/soumyasen1809/RustyTUICalendar.git
+$ cd RustyTUICalendar
 ```
 
 Build the project:
 
 ```sh
-cargo build --release
+$ cargo build --release
 ```
 
 Run the application:
 
 ```sh
-cargo run
+$ cargo run
 ```
+
+## Features
+Press F3 to start typing your commands.
+
+- **Add Events to ToDo or Calendar**: If the input specifies `todo`, it adds the event to the ToDo list. If the input specifies `app`, it adds the appointment to the calendar.
+```sh
+$ app, 2024-09-14 13:14:50, Appointment Title, Appointment Location
+$ todo, true, Todo Title
+```
+- **Search for an Appointment**: If the input specifies `search`, it searches for the appointment in the calendar for the given date.
+```sh
+$ find, 2024-09-14
+```
+- **Jump to Today**: If the input specifies `today`, it sets the calendar date to the current date.
+```sh
+$ today
+```
+
+Additionally, press F1 and F2 to move to previous and next months respectively.
 
 ## Contributing
 
