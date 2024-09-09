@@ -75,7 +75,9 @@ fn write_user_input_to_json(
         }
     } else if parts_input.len() == 2 {
         // Search for an appointment
-        if parts_input[0].trim().to_lowercase().contains("find") {
+        if (parts_input[0].trim().to_lowercase().contains("find"))
+            || parts_input[0].trim().to_lowercase().contains("search")
+        {
             if parts_input[1].clone().len() < 19 {
                 // If less than 19, then it is in NaiveDate format => need to change it to NaiveDateTime
                 let date_time_formated =
