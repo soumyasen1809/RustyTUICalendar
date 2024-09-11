@@ -27,8 +27,8 @@ pub mod weather;
 pub mod widgets;
 
 #[tokio::main]
-async fn main() -> io::Result<()> {
-    let _ = get_weather("London").await;
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    get_weather("London").await?;
 
     enable_raw_mode()?;
     stdout().execute(EnterAlternateScreen)?;

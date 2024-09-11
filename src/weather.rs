@@ -2,37 +2,43 @@
 pub struct Weather {
     temp_c: String,
     feels_like_c: String,
-    // local_obs_date_time: String,
-    // uv_index: String,
-    // humidity: String,
-    // pressure: String,
-    // visibility: String,
-    // winddir_degree: String,
-    // wind_speed: String,
+    local_obs_date_time: String,
+    uv_index: String,
+    humidity: String,
+    pressure: String,
+    visibility: String,
+    winddir_degree: String,
+    winddir_point: String,
+    wind_speed: String,
+    weather_description: String,
 }
 
 impl Weather {
     pub fn new(
         temp_c: String,
         feels_like_c: String,
-        // local_obs_date_time: String,
-        // uv_index: String,
-        // humidity: String,
-        // pressure: String,
-        // visibility: String,
-        // winddir_degree: String,
-        // wind_speed: String,
+        local_obs_date_time: String,
+        uv_index: String,
+        humidity: String,
+        pressure: String,
+        visibility: String,
+        winddir_degree: String,
+        winddir_point: String,
+        wind_speed: String,
+        weather_description: String,
     ) -> Self {
         Self {
             temp_c,
             feels_like_c,
-            // local_obs_date_time,
-            // uv_index,
-            // humidity,
-            // pressure,
-            // visibility,
-            // winddir_degree,
-            // wind_speed,
+            local_obs_date_time,
+            uv_index,
+            humidity,
+            pressure,
+            visibility,
+            winddir_degree,
+            winddir_point,
+            wind_speed,
+            weather_description,
         }
     }
 
@@ -44,33 +50,41 @@ impl Weather {
         &self.feels_like_c
     }
 
-    // pub fn local_obs_date_time(&self) -> &str {
-    //     &self.local_obs_date_time
-    // }
+    pub fn local_obs_date_time(&self) -> &str {
+        &self.local_obs_date_time
+    }
 
-    // pub fn uv_index(&self) -> &str {
-    //     &self.uv_index
-    // }
+    pub fn uv_index(&self) -> &str {
+        &self.uv_index
+    }
 
-    // pub fn humidity(&self) -> &str {
-    //     &self.humidity
-    // }
+    pub fn humidity(&self) -> &str {
+        &self.humidity
+    }
 
-    // pub fn pressure(&self) -> &str {
-    //     &self.pressure
-    // }
+    pub fn pressure(&self) -> &str {
+        &self.pressure
+    }
 
-    // pub fn visibility(&self) -> &str {
-    //     &self.visibility
-    // }
+    pub fn visibility(&self) -> &str {
+        &self.visibility
+    }
 
-    // pub fn winddir_degree(&self) -> &str {
-    //     &self.winddir_degree
-    // }
+    pub fn winddir_degree(&self) -> &str {
+        &self.winddir_degree
+    }
 
-    // pub fn wind_speed(&self) -> &str {
-    //     &self.wind_speed
-    // }
+    pub fn wind_speed(&self) -> &str {
+        &self.wind_speed
+    }
+
+    pub fn weather_description(&self) -> &str {
+        &self.weather_description
+    }
+
+    pub fn winddir_point(&self) -> &str {
+        &self.winddir_point
+    }
 }
 
 /// Use curl wttr.in in JSON format: https://wttr.in/London?format=j1
@@ -100,9 +114,27 @@ fn get_weather_from_json(weather_bod: &String) -> Vec<Weather> {
         .map(|val| {
             let temp_c = val["temp_C"].as_str().unwrap().to_string();
             let feels_like_c = val["FeelsLikeC"].as_str().unwrap().to_string();
+            let local_obs_date_time = val["localObsDateTime"].as_str().unwrap().to_string();
+            let uv_index = val["uvIndex"].as_str().unwrap().to_string();
+            let humidity = val["humidity"].as_str().unwrap().to_string();
+            let pressure = val["pressure"].as_str().unwrap().to_string();
+            let visibility = val["visibility"].as_str().unwrap().to_string();
+            let winddir_degree = val["winddirDegree"].as_str().unwrap().to_string();
+            let winddir_point = val["winddir16Point"].as_str().unwrap().to_string();
+            let wind_speed = val["windspeedKmph"].as_str().unwrap().to_string();
+            let weather_description = val["weatherDesc"][0]["value"].as_str().unwrap().to_string(); // get the first description
             return Weather {
                 temp_c,
                 feels_like_c,
+                local_obs_date_time,
+                uv_index,
+                humidity,
+                pressure,
+                visibility,
+                winddir_degree,
+                winddir_point,
+                wind_speed,
+                weather_description,
             };
         })
         .collect::<Vec<Weather>>();
