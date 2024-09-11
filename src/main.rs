@@ -15,6 +15,7 @@ use ratatui::{
 };
 
 use tui_textarea::{Input, TextArea};
+use weather::get_weather;
 use widgets::app_layout;
 
 pub mod calendar_data;
@@ -22,9 +23,13 @@ pub mod calendar_widget;
 pub mod logic;
 pub mod to_do_data;
 pub mod to_do_widget;
+pub mod weather;
 pub mod widgets;
 
-fn main() -> io::Result<()> {
+#[tokio::main]
+async fn main() -> io::Result<()> {
+    let _ = get_weather("London").await;
+
     enable_raw_mode()?;
     stdout().execute(EnterAlternateScreen)?;
     let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
