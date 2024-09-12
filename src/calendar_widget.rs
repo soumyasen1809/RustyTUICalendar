@@ -55,13 +55,13 @@ fn get_appointment_block(day: u32, month: u32, year: i32) -> Block<'static> {
 fn get_weather_block(city_name: &str) -> Block<'static> {
     Block::default()
         .borders(Borders::ALL)
-        .fg(Color::LightMagenta)
+        .fg(Color::Magenta)
         .title(format!("Weather for {:?}", city_name))
 }
 
 fn get_weather_text(weather_text: String) -> Paragraph<'static> {
     Paragraph::new(weather_text)
-        .fg(Color::LightMagenta)
+        .fg(Color::Magenta)
         .block(Block::new().padding(Padding::new(5, 2, 2, 2)))
         .alignment(Alignment::Left)
         .wrap(Wrap { trim: true })

@@ -117,22 +117,44 @@ impl Weather {
         let current_weather = get_weather(city).await?;
         let mut city_weather_str = String::new();
         for wtr in current_weather {
-            city_weather_str.push_str(&format!("Temp: {:>7} °C\n", wtr.temp.temp_c));
-            city_weather_str.push_str(&format!("Feels: {:>6} °C\n", wtr.temp.feels_like_c));
-            city_weather_str.push_str(&format!("Condition: {:>8}\n", wtr.weather_description));
-            city_weather_str.push_str(&format!("UV Index: {:>3} \n", wtr.conditions.uv_index));
-            city_weather_str.push_str(&format!("Pressure: {:>6} Pa\n", wtr.conditions.pressure));
-            city_weather_str.push_str(&format!("Humidity: {:>4} °C\n", wtr.conditions.humidity));
+            // https://github.com/chubin/wttr.in/blob/master/lib/fields.py
+            city_weather_str.push_str(&format!("Temperature:    {:>2} °C\n", wtr.temp.temp_c));
             city_weather_str.push_str(&format!(
-                "Visibility: {:>2} °C\n",
+                "Feels:          {:>2} °C\n",
+                wtr.temp.feels_like_c
+            ));
+            city_weather_str.push_str(&format!(
+                "Condition:      {:>2} \n",
+                wtr.weather_description
+            ));
+            city_weather_str.push_str(&format!(
+                "uvIndex:        {:>1} \n",
+                wtr.conditions.uv_index
+            ));
+            city_weather_str.push_str(&format!(
+                "Pressure:       {:>2} hPa\n",
+                wtr.conditions.pressure
+            ));
+            city_weather_str.push_str(&format!(
+                "Humidity:       {:>2} %\n",
+                wtr.conditions.humidity
+            ));
+            city_weather_str.push_str(&format!(
+                "Visibility:     {:>2} km\n",
                 wtr.conditions.visibility
             ));
             city_weather_str.push_str(&format!(
-                "Wind dir: {:>5} {:>2} \n",
+                "Wind dir:       {:>2}° {:>2} \n",
                 wtr.wind.winddir_degree, wtr.wind.winddir_point
             ));
-            city_weather_str.push_str(&format!("Wind speed: {:>2} kmph\n", wtr.wind.wind_speed));
-            city_weather_str.push_str(&format!("Observed: {:>12} \n", wtr.local_obs_date_time));
+            city_weather_str.push_str(&format!(
+                "Wind speed:     {:>2} kmph\n",
+                wtr.wind.wind_speed
+            ));
+            city_weather_str.push_str(&format!(
+                "Observed:       {:>2} \n",
+                wtr.local_obs_date_time
+            ));
         }
         Ok(city_weather_str)
     }
@@ -173,7 +195,8 @@ fn get_weather_from_json(weather_bod: &str) -> Vec<Weather> {
             let winddir_degree = val["winddirDegree"].as_str().unwrap().to_string();
             let winddir_point = val["winddir16Point"].as_str().unwrap().to_string();
             let wind_speed = val["windspeedKmph"].as_str().unwrap().to_string();
-            let weather_description = val["weatherDesc"][0]["value"].as_str().unwrap().to_string(); // get the first description
+            let weather_code = val["weatherCode"].as_str().unwrap().to_string(); // get the code and map it
+            let weather_description = get_weather_from_code(weather_code);
 
             let temp = Temperature {
                 temp_c,
@@ -201,4 +224,59 @@ fn get_weather_from_json(weather_bod: &str) -> Vec<Weather> {
         .collect::<Vec<Weather>>();
 
     weather
+}
+
+pub fn get_weather_from_code(code_string: String) -> String {
+    let weather_code_map: Vec<(&str, u32)> = vec![
+        ("clearsky", 113),
+        ("cloudy", 119),
+        ("fair", 116),
+        ("fog", 143),
+        ("heavyrain", 302),
+        ("heavyrainandthunder", 389),
+        ("heavyrainshowers", 305),
+        ("heavyrainshowersandthunder", 386),
+        ("heavysleet", 314),
+        ("heavysleetandthunder", 377),
+        ("heavysleetshowers", 362),
+        ("heavysleetshowersandthunder", 374),
+        ("heavysnow", 230),
+        ("heavysnowandthunder", 392),
+        ("heavysnowshowers", 371),
+        ("heavysnowshowersandthunder", 392),
+        ("lightrain", 266),
+        ("lightrainandthunder", 200),
+        ("lightrainshowers", 176),
+        ("lightrainshowersandthunder", 386),
+        ("lightsleet", 281),
+        ("lightsleetandthunder", 377),
+        ("lightsleetshowers", 284),
+        ("lightsnow", 320),
+        ("lightsnowandthunder", 392),
+        ("lightsnowshowers", 368),
+        ("lightssleetshowersandthunder", 365),
+        ("lightssnowshowersandthunder", 392),
+        ("partlycloudy", 116),
+        ("rain", 293),
+        ("rainandthunder", 389),
+        ("rainshowers", 299),
+        ("rainshowersandthunder", 386),
+        ("sleet", 185),
+        ("sleetandthunder", 392),
+        ("sleetshowers", 263),
+        ("sleetshowersandthunder", 392),
+        ("snow", 329),
+        ("snowandthunder", 392),
+        ("snowshowers", 230),
+        ("snowshowersandthunder", 392),
+    ];
+
+    let code: u32 = code_string.trim().parse().unwrap(); // Convert string to u32
+
+    let w_code = weather_code_map.iter().find(|w_c| w_c.1 == code);
+    if w_code == None {
+        return "unknown conditions!".to_string();
+    }
+
+    w_code.unwrap().0.to_string()
 }
