@@ -56,12 +56,22 @@ fn get_weather_block() -> Block<'static> {
     Block::default()
         .borders(Borders::ALL)
         .fg(Color::LightMagenta)
+        .title("Weather")
+}
+
+fn get_weather_text(weather_text: String) -> Paragraph<'static> {
+    Paragraph::new(weather_text)
+        .fg(Color::LightMagenta)
+        .block(Block::new().padding(Padding::new(5, 2, 2, 2)))
+        .alignment(Alignment::Left)
+        .wrap(Wrap { trim: true })
 }
 
 pub fn main_calendar_layout(
-    frame: &mut Frame,
+    frame: &mut Frame<'_>,
     main_layout: &Rc<[Rect]>,
     calendar_date: &mut NaiveDateTime,
+    weather_text: &String,
 ) {
     let mut calendar = Calendar::new();
     let day = calendar_date.day();
@@ -99,6 +109,10 @@ pub fn main_calendar_layout(
     frame.render_widget(get_calendar_text(calendar_text), month_weather_layout[0]);
 
     frame.render_widget(weather_block.clone(), month_weather_layout[1]);
+    frame.render_widget(
+        get_weather_text(weather_text.to_string()),
+        month_weather_layout[1],
+    );
 
     frame.render_widget(appointment_block.clone(), layout[2]);
     frame.render_widget(get_appointment_text(appointment_text), layout[2]);

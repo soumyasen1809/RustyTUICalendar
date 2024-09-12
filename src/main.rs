@@ -15,7 +15,7 @@ use ratatui::{
 };
 
 use tui_textarea::{Input, TextArea};
-use weather::get_weather;
+use weather::{get_weather, Weather};
 use widgets::app_layout;
 
 pub mod calendar_data;
@@ -28,8 +28,6 @@ pub mod widgets;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    get_weather("London").await?;
-
     enable_raw_mode()?;
     stdout().execute(EnterAlternateScreen)?;
     let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
@@ -46,6 +44,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut is_writing_mode = false;
     let mut should_quit = false;
 
+    let weather = Weather::default();
+    let weather_text = weather.generate_weather_text("London").await?;
+
     while !should_quit {
         terminal.draw(|f| {
             app_layout(
@@ -53,8 +54,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 &mut input_todo_textarea,
                 &mut calendar_date,
                 is_writing_mode,
-            )
+                &weather_text,
+            );
         })?;
+
         should_quit = handle_events(
             &mut input_todo_textarea,
             &mut calendar_date,

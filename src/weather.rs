@@ -1,4 +1,4 @@
-#[derive(Debug, Clone)]
+#[derive(Default, Debug, Clone)]
 pub struct Weather {
     temp_c: String,
     feels_like_c: String,
@@ -85,22 +85,35 @@ impl Weather {
     pub fn winddir_point(&self) -> &str {
         &self.winddir_point
     }
+
+    pub async fn generate_weather_text(
+        &self,
+        city: &str,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let current_weather = get_weather(&city.to_string()).await?;
+        let mut city_weather_str = String::new();
+        for wtr in current_weather {
+            city_weather_str.push_str(&format!("Temperature: {:?} degC\n", wtr.temp_c));
+            city_weather_str.push_str(&format!("Feels like: {:?} degC\n", wtr.feels_like_c));
+        }
+        Ok(city_weather_str)
+    }
 }
 
 /// Use curl wttr.in in JSON format: https://wttr.in/London?format=j1
-pub async fn get_weather(city: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn get_weather(city: &str) -> Result<Vec<Weather>, Box<dyn std::error::Error>> {
     let url = String::from("https://wttr.in/") + city + &String::from("?format=j1");
     let weather_response = reqwest::get(url).await?;
 
+    let mut weather_vec: Vec<Weather> = Vec::new();
     if weather_response.status().is_success() {
         let weather_body = weather_response.text().await?;
-        let weather_vec = get_weather_from_json(&weather_body);
-        println!("weather: {:?}", &weather_vec);
+        weather_vec = get_weather_from_json(&weather_body);
     } else {
         println!("Failed to get the weather!");
     }
 
-    Ok(())
+    Ok(weather_vec)
 }
 
 fn get_weather_from_json(weather_bod: &String) -> Vec<Weather> {
