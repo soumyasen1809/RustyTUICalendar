@@ -2,6 +2,8 @@
 
 RustyTUICalendar is a terminal-based calendar application written in Rust. It leverages the `chrono` crate for date and time manipulation and provides a simple and intuitive interface for viewing and managing calendar events.
 
+![Image of the TUI interface](assets/calendar_look.png)
+
 ## Features
 
 - Display a monthly calendar starting from Sunday
@@ -9,6 +11,7 @@ RustyTUICalendar is a terminal-based calendar application written in Rust. It le
 - Highlight current date
 - Add and delete To-Do list
 - User-friendly terminal interface
+- View current weather data
 
 ## Installation
 
@@ -50,6 +53,8 @@ $ find, 2024-09-14
 $ today
 ```
 
+The default location for Weather is set as Guatemala. If you want to add your city of choice, replace it to the city you want. If you want to get the weather conditions for your current location, leave the string empty.
+
 Additionally, press F1 and F2 to move to previous and next months respectively.
 
 ## Contributing
@@ -64,6 +69,7 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 - chrono crate for date and time manipulation
 - ratatui crate for terminal user interface
+- wttr.in for weather data
 
 ## Contact
 

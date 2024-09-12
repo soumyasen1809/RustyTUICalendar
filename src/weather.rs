@@ -25,6 +25,7 @@ pub struct Weather {
     wind: Wind,
     local_obs_date_time: String,
     weather_description: String,
+    weather_emoji: String,
 }
 
 impl Weather {
@@ -41,6 +42,7 @@ impl Weather {
         wind_speed: String,
         local_obs_date_time: String,
         weather_description: String,
+        weather_emoji: String,
     ) -> Self {
         let temp = Temperature {
             temp_c,
@@ -63,6 +65,7 @@ impl Weather {
             wind,
             local_obs_date_time,
             weather_description,
+            weather_emoji,
         }
     }
 
@@ -110,6 +113,10 @@ impl Weather {
         &self.weather_description
     }
 
+    pub fn get_weather_emoji(&self) -> &str {
+        &self.weather_emoji
+    }
+
     pub async fn generate_weather_text(
         &self,
         city: &str,
@@ -124,8 +131,8 @@ impl Weather {
                 wtr.temp.feels_like_c
             ));
             city_weather_str.push_str(&format!(
-                "Condition:      {:>2} \n",
-                wtr.weather_description
+                "Condition:      {:>2}{:>1} \n",
+                wtr.weather_description, wtr.weather_emoji
             ));
             city_weather_str.push_str(&format!(
                 "uvIndex:        {:>1} \n",
@@ -219,6 +226,7 @@ fn get_weather_from_json(weather_bod: &str) -> Vec<Weather> {
                 wind,
                 local_obs_date_time,
                 weather_description,
+                weather_emoji,
             }
         })
         .collect::<Vec<Weather>>();

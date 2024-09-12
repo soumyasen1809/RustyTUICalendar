@@ -44,7 +44,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut is_writing_mode = false;
     let mut should_quit = false;
 
-    let city_name = "London";
+    let city_name = "Guatemala";
     let weather = Weather::default();
     let weather_text = weather.generate_weather_text(city_name).await?;
 
