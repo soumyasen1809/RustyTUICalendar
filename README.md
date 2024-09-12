@@ -37,7 +37,7 @@ $ cargo run
 ```
 
 ## Features
-Press F3 to start typing your commands.
+Press F9 to start typing your commands. If you want to delete the entire line and startover, press `Delete`. Add `Enter` to add the command.
 
 - **Add Events to ToDo or Calendar**: If the input specifies `todo`, it adds the event to the ToDo list. If the input specifies `app`, it adds the appointment to the calendar.
 ```sh
@@ -55,7 +55,7 @@ $ today
 
 The default location for Weather is set as Guatemala. If you want to add your city of choice, replace it to the city you want. If you want to get the weather conditions for your current location, leave the string empty.
 
-Additionally, press F1 and F2 to move to previous and next months respectively.
+Additionally, press F1 and F2 to move to previous and next days respectively, F3 and F4 to move to previous and next months respectively and F5 and F6 to move to previous and next years respectively.
 
 ## Contributing
 

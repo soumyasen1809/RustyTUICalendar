@@ -2,7 +2,7 @@
 use std::io::{self, stdout};
 
 use calendar_data::Calendar;
-use chrono::{Months, NaiveDateTime};
+use chrono::{Days, Months, NaiveDateTime};
 use ratatui::{
     backend::CrosstermBackend,
     crossterm::{
@@ -37,7 +37,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .fg(Color::DarkGray)
         .add_modifier(Modifier::RAPID_BLINK);
     input_todo_textarea.set_line_number_style(style);
-    input_todo_textarea.set_placeholder_text("F3 to start entering events ... \n");
+    input_todo_textarea.set_placeholder_text("F9 to start entering events ... \n");
 
     let calendar = Calendar::new();
     let mut calendar_date = calendar.current_date;
@@ -82,20 +82,36 @@ fn handle_events(
             match key.code {
                 KeyCode::Esc => return Ok(true),
                 KeyCode::F(1) => {
+                    // Go to the prev day
+                    *calendar_data = calendar_data.checked_sub_days(Days::new(1)).unwrap();
+                }
+                KeyCode::F(2) => {
+                    // Go to the next day
+                    *calendar_data = calendar_data.checked_add_days(Days::new(1)).unwrap();
+                }
+                KeyCode::F(3) => {
                     // Go to the prev month
                     *calendar_data = calendar_data.checked_sub_months(Months::new(1)).unwrap();
                 }
-                KeyCode::F(2) => {
+                KeyCode::F(4) => {
                     // Go to the next month
                     *calendar_data = calendar_data.checked_add_months(Months::new(1)).unwrap();
                 }
-                KeyCode::F(3) => {
+                KeyCode::F(5) => {
+                    // Go to the prev year
+                    *calendar_data = calendar_data.checked_sub_months(Months::new(12)).unwrap();
+                }
+                KeyCode::F(6) => {
+                    // Go to the next year
+                    *calendar_data = calendar_data.checked_add_months(Months::new(12)).unwrap();
+                }
+                KeyCode::F(9) => {
                     if *is_writing_mode {
-                        // If writing mode is ON, F3 turns it OFF
+                        // If writing mode is ON, F9 turns it OFF
                         *is_writing_mode = false
                     } else {
                         textarea.set_placeholder_text("");
-                        // If writing mode is OFF, F3 turns it ON
+                        // If writing mode is OFF, F9 turns it ON
                         *is_writing_mode = true
                     };
                 }
