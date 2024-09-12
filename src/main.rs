@@ -15,7 +15,7 @@ use ratatui::{
 };
 
 use tui_textarea::{Input, TextArea};
-use weather::{get_weather, Weather};
+use weather::Weather;
 use widgets::app_layout;
 
 pub mod calendar_data;

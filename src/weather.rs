@@ -1,23 +1,37 @@
 #[derive(Default, Debug, Clone)]
-pub struct Weather {
+struct Temperature {
     temp_c: String,
     feels_like_c: String,
-    local_obs_date_time: String,
+}
+
+#[derive(Default, Debug, Clone)]
+struct WeatherConditions {
     uv_index: String,
     humidity: String,
     pressure: String,
     visibility: String,
+}
+#[derive(Default, Debug, Clone)]
+struct Wind {
     winddir_degree: String,
     winddir_point: String,
     wind_speed: String,
+}
+
+#[derive(Default, Debug, Clone)]
+pub struct Weather {
+    temp: Temperature,
+    conditions: WeatherConditions,
+    wind: Wind,
+    local_obs_date_time: String,
     weather_description: String,
 }
 
 impl Weather {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         temp_c: String,
         feels_like_c: String,
-        local_obs_date_time: String,
         uv_index: String,
         humidity: String,
         pressure: String,
@@ -25,76 +39,100 @@ impl Weather {
         winddir_degree: String,
         winddir_point: String,
         wind_speed: String,
+        local_obs_date_time: String,
         weather_description: String,
     ) -> Self {
-        Self {
+        let temp = Temperature {
             temp_c,
             feels_like_c,
-            local_obs_date_time,
+        };
+        let conditions = WeatherConditions {
             uv_index,
             humidity,
             pressure,
             visibility,
+        };
+        let wind = Wind {
             winddir_degree,
             winddir_point,
             wind_speed,
+        };
+        Self {
+            temp,
+            conditions,
+            wind,
+            local_obs_date_time,
             weather_description,
         }
     }
 
     pub fn temp_c(&self) -> &str {
-        &self.temp_c
+        &self.temp.temp_c
     }
 
     pub fn feels_like_c(&self) -> &str {
-        &self.feels_like_c
+        &self.temp.feels_like_c
+    }
+
+    pub fn uv_index(&self) -> &str {
+        &self.conditions.uv_index
+    }
+
+    pub fn humidity(&self) -> &str {
+        &self.conditions.humidity
+    }
+
+    pub fn pressure(&self) -> &str {
+        &self.conditions.pressure
+    }
+
+    pub fn visibility(&self) -> &str {
+        &self.conditions.visibility
+    }
+
+    pub fn winddir_degree(&self) -> &str {
+        &self.wind.winddir_degree
+    }
+
+    pub fn wind_speed(&self) -> &str {
+        &self.wind.wind_speed
+    }
+
+    pub fn winddir_point(&self) -> &str {
+        &self.wind.winddir_point
     }
 
     pub fn local_obs_date_time(&self) -> &str {
         &self.local_obs_date_time
     }
 
-    pub fn uv_index(&self) -> &str {
-        &self.uv_index
-    }
-
-    pub fn humidity(&self) -> &str {
-        &self.humidity
-    }
-
-    pub fn pressure(&self) -> &str {
-        &self.pressure
-    }
-
-    pub fn visibility(&self) -> &str {
-        &self.visibility
-    }
-
-    pub fn winddir_degree(&self) -> &str {
-        &self.winddir_degree
-    }
-
-    pub fn wind_speed(&self) -> &str {
-        &self.wind_speed
-    }
-
     pub fn weather_description(&self) -> &str {
         &self.weather_description
-    }
-
-    pub fn winddir_point(&self) -> &str {
-        &self.winddir_point
     }
 
     pub async fn generate_weather_text(
         &self,
         city: &str,
     ) -> Result<String, Box<dyn std::error::Error>> {
-        let current_weather = get_weather(&city.to_string()).await?;
+        let current_weather = get_weather(city).await?;
         let mut city_weather_str = String::new();
         for wtr in current_weather {
-            city_weather_str.push_str(&format!("Temperature: {:?} degC\n", wtr.temp_c));
-            city_weather_str.push_str(&format!("Feels like: {:?} degC\n", wtr.feels_like_c));
+            city_weather_str.push_str(&format!("Temperature: {:>5} °C\n", wtr.temp.temp_c));
+            city_weather_str.push_str(&format!("Feels like: {:>5} °C\n", wtr.temp.feels_like_c));
+            city_weather_str.push_str(&format!("Currently: {:>5}\n", wtr.weather_description));
+            city_weather_str.push_str(&format!("UV Index: {:>5} \n", wtr.conditions.uv_index));
+            city_weather_str.push_str(&format!("Pressure: {:>5} Pa\n", wtr.conditions.pressure));
+            city_weather_str.push_str(&format!("Humidity: {:>5} °C\n", wtr.conditions.humidity));
+            city_weather_str.push_str(&format!(
+                "Visibility: {:>5} °C\n",
+                wtr.conditions.visibility
+            ));
+            city_weather_str.push_str(&format!(
+                "Wind direction: {:>5} {:>1} \n",
+                wtr.wind.winddir_degree, wtr.wind.winddir_point
+            ));
+            city_weather_str.push_str(&format!("Wind speed: {:>5} kmph\n", wtr.wind.wind_speed));
+            city_weather_str.push_str(&format!("Observed at: {:>5} \n", wtr.local_obs_date_time));
         }
         Ok(city_weather_str)
     }
@@ -116,9 +154,9 @@ pub async fn get_weather(city: &str) -> Result<Vec<Weather>, Box<dyn std::error:
     Ok(weather_vec)
 }
 
-fn get_weather_from_json(weather_bod: &String) -> Vec<Weather> {
+fn get_weather_from_json(weather_bod: &str) -> Vec<Weather> {
     let serde_weather_json: serde_json::Value =
-        serde_json::from_str(&weather_bod).expect("Serde error in reading data from JSON");
+        serde_json::from_str(weather_bod).expect("Serde error in reading data from JSON");
 
     let weather = serde_weather_json["current_condition"]
         .as_array()
@@ -136,21 +174,31 @@ fn get_weather_from_json(weather_bod: &String) -> Vec<Weather> {
             let winddir_point = val["winddir16Point"].as_str().unwrap().to_string();
             let wind_speed = val["windspeedKmph"].as_str().unwrap().to_string();
             let weather_description = val["weatherDesc"][0]["value"].as_str().unwrap().to_string(); // get the first description
-            return Weather {
+
+            let temp = Temperature {
                 temp_c,
                 feels_like_c,
-                local_obs_date_time,
+            };
+            let conditions = WeatherConditions {
                 uv_index,
                 humidity,
                 pressure,
                 visibility,
+            };
+            let wind = Wind {
                 winddir_degree,
                 winddir_point,
                 wind_speed,
-                weather_description,
             };
+            Weather {
+                temp,
+                conditions,
+                wind,
+                local_obs_date_time,
+                weather_description,
+            }
         })
         .collect::<Vec<Weather>>();
 
-    return weather;
+    weather
 }

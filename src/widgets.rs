@@ -6,7 +6,7 @@ use ratatui::{
 use tui_textarea::TextArea;
 
 use crate::to_do_widget::main_todo_layout;
-use crate::{calendar_widget::main_calendar_layout, weather::Weather};
+use crate::calendar_widget::main_calendar_layout;
 
 pub fn app_layout(
     frame: &mut Frame<'_>,
@@ -20,7 +20,7 @@ pub fn app_layout(
         .constraints([Constraint::Percentage(70), Constraint::Percentage(30)].to_vec())
         .split(frame.area());
 
-    main_calendar_layout(frame, &main_layout, calendar_date, &weather_text);
+    main_calendar_layout(frame, &main_layout, calendar_date, weather_text);
     main_todo_layout(
         frame,
         &main_layout,
