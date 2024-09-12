@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use chrono::{Datelike, NaiveDateTime};
+use chrono::{format::StrftimeItems, Datelike, Local, NaiveDateTime};
 use ratatui::{
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Stylize},
@@ -16,6 +16,18 @@ fn get_calendar_title_block(month: u32, year: i32) -> Block<'static> {
         .fg(Color::Red)
         .add_modifier(Modifier::BOLD)
         .title(format!(" Calendar - {:?} / {:?} ", month, year))
+}
+
+fn get_calendar_title_text() -> Paragraph<'static> {
+    let current_time = Local::now()
+        .time()
+        .format_with_items(StrftimeItems::new("%H:%M:%S"));
+    Paragraph::new(current_time.to_string())
+        .fg(Color::LightRed)
+        // .add_modifier(Modifier::BOLD)
+        .block(Block::new().padding(Padding::new(0, 2, 0, 0)))
+        .alignment(Alignment::Right)
+        .wrap(Wrap { trim: true })
 }
 
 fn get_calendar_text(calendar_text: String) -> Paragraph<'static> {
@@ -79,6 +91,7 @@ pub fn main_calendar_layout(
     let year = calendar_date.year();
     let month = calendar_date.month();
 
+    let calendar_title_text = get_calendar_title_text();
     let calendar_text = calendar.generate_calendar_text(calendar_date);
     let appointment_text = calendar.generate_appointment_text(*calendar_date);
 
@@ -105,6 +118,7 @@ pub fn main_calendar_layout(
     let weather_block = get_weather_block(city_name);
 
     frame.render_widget(calendar_block.clone(), layout[0]);
+    frame.render_widget(calendar_title_text, layout[0]);
 
     frame.render_widget(month_days_block.clone(), month_weather_layout[0]);
     frame.render_widget(get_calendar_text(calendar_text), month_weather_layout[0]);
