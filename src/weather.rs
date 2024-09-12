@@ -283,7 +283,7 @@ pub fn get_weather_from_code(code_string: String) -> (String, String) {
     let code: u32 = code_string.trim().parse().unwrap(); // Convert string to u32
 
     let w_code = weather_code_map.iter().find(|w_c| w_c.2 == code);
-    if w_code == None {
+    if w_code.is_none() {
         return ("unknown conditions!".to_string(), "".to_string());
     }
 
