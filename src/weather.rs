@@ -117,22 +117,22 @@ impl Weather {
         let current_weather = get_weather(city).await?;
         let mut city_weather_str = String::new();
         for wtr in current_weather {
-            city_weather_str.push_str(&format!("Temperature: {:>5} °C\n", wtr.temp.temp_c));
-            city_weather_str.push_str(&format!("Feels like: {:>5} °C\n", wtr.temp.feels_like_c));
-            city_weather_str.push_str(&format!("Currently: {:>5}\n", wtr.weather_description));
-            city_weather_str.push_str(&format!("UV Index: {:>5} \n", wtr.conditions.uv_index));
-            city_weather_str.push_str(&format!("Pressure: {:>5} Pa\n", wtr.conditions.pressure));
-            city_weather_str.push_str(&format!("Humidity: {:>5} °C\n", wtr.conditions.humidity));
+            city_weather_str.push_str(&format!("Temp: {:>7} °C\n", wtr.temp.temp_c));
+            city_weather_str.push_str(&format!("Feels: {:>6} °C\n", wtr.temp.feels_like_c));
+            city_weather_str.push_str(&format!("Condition: {:>8}\n", wtr.weather_description));
+            city_weather_str.push_str(&format!("UV Index: {:>3} \n", wtr.conditions.uv_index));
+            city_weather_str.push_str(&format!("Pressure: {:>6} Pa\n", wtr.conditions.pressure));
+            city_weather_str.push_str(&format!("Humidity: {:>4} °C\n", wtr.conditions.humidity));
             city_weather_str.push_str(&format!(
-                "Visibility: {:>5} °C\n",
+                "Visibility: {:>2} °C\n",
                 wtr.conditions.visibility
             ));
             city_weather_str.push_str(&format!(
-                "Wind direction: {:>5} {:>1} \n",
+                "Wind dir: {:>5} {:>2} \n",
                 wtr.wind.winddir_degree, wtr.wind.winddir_point
             ));
-            city_weather_str.push_str(&format!("Wind speed: {:>5} kmph\n", wtr.wind.wind_speed));
-            city_weather_str.push_str(&format!("Observed at: {:>5} \n", wtr.local_obs_date_time));
+            city_weather_str.push_str(&format!("Wind speed: {:>2} kmph\n", wtr.wind.wind_speed));
+            city_weather_str.push_str(&format!("Observed: {:>12} \n", wtr.local_obs_date_time));
         }
         Ok(city_weather_str)
     }

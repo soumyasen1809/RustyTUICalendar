@@ -52,11 +52,11 @@ fn get_appointment_block(day: u32, month: u32, year: i32) -> Block<'static> {
         ))
 }
 
-fn get_weather_block() -> Block<'static> {
+fn get_weather_block(city_name: &str) -> Block<'static> {
     Block::default()
         .borders(Borders::ALL)
         .fg(Color::LightMagenta)
-        .title("Weather")
+        .title(format!("Weather for {:?}", city_name))
 }
 
 fn get_weather_text(weather_text: String) -> Paragraph<'static> {
@@ -72,6 +72,7 @@ pub fn main_calendar_layout(
     main_layout: &Rc<[Rect]>,
     calendar_date: &mut NaiveDateTime,
     weather_text: &String,
+    city_name: &str,
 ) {
     let mut calendar = Calendar::new();
     let day = calendar_date.day();
@@ -101,7 +102,7 @@ pub fn main_calendar_layout(
     let calendar_block = get_calendar_title_block(month, year);
     let month_days_block = get_calendar_month_block();
     let appointment_block = get_appointment_block(day, month, year);
-    let weather_block = get_weather_block();
+    let weather_block = get_weather_block(city_name);
 
     frame.render_widget(calendar_block.clone(), layout[0]);
 
