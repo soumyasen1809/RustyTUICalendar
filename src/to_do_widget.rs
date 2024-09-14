@@ -81,7 +81,7 @@ fn write_user_input_to_json(
             if parts_input[1].clone().len() < 19 {
                 // If less than 19, then it is in NaiveDate format => need to change it to NaiveDateTime
                 let date_time_formated =
-                    String::from(parts_input[1].clone()) + &String::from(" 00:00:00"); // converting string to NaiveDateTime format
+                    parts_input[1].clone() + &String::from(" 00:00:00"); // converting string to NaiveDateTime format
                 *calendar_date = string_to_naive_date(&date_time_formated);
             } else {
                 *calendar_date = string_to_naive_date(&parts_input[1].clone());
